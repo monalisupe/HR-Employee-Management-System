@@ -83,9 +83,9 @@ export default function Register() {
       <div className="mx-auto grid min-h-[calc(100vh-24px)] w-full max-w-7xl grid-cols-1 overflow-hidden rounded-2xl bg-white shadow-xl sm:min-h-[calc(100vh-40px)] lg:grid-cols-2">
 
         {/* LEFT: Branding panel */}
-        <section className="relative flex flex-col overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-violet-800 px-7 py-8 text-white sm:px-12 sm:py-12 lg:rounded-r-none lg:px-14 lg:py-14">
+        <section className="relative flex flex-col overflow-hidden rounded-2xl bg-linear-to-br from-violet-600 via-purple-600 to-violet-800 px-7 py-8 text-white sm:px-12 sm:py-12 lg:rounded-r-none lg:px-14 lg:py-14">
           <div className="pointer-events-none absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:22px_22px]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] bg-size-[22px_22px]" />
           </div>
 
           <div className="relative flex items-center gap-3">
