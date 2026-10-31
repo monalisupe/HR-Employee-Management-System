@@ -202,20 +202,22 @@ export default function Topbar({ setIsMobileOpen }) {
                 </button>
               </div>
 
-              <div className="mt-2 pt-2 border-t border-slate-100 px-2 flex justify-between items-center text-[11px] text-slate-600">
-                <button
-                  onClick={preloadDemoData}
-                  className="text-violet-600 hover:text-violet-800 font-medium cursor-pointer"
-                >
-                  Load Demo Data
-                </button>
-                <button
-                  onClick={resetToZeroData}
-                  className="text-slate-500 hover:text-slate-700 cursor-pointer"
-                >
-                  Reset Zero
-                </button>
-              </div>
+              {activeRole === 'hr' && (
+                <div className="mt-2 pt-2 border-t border-slate-100 px-2 flex justify-between items-center text-[11px] text-slate-600">
+                  <button
+                    onClick={preloadDemoData}
+                    className="text-violet-600 hover:text-violet-800 font-medium cursor-pointer"
+                  >
+                    Load Demo Data
+                  </button>
+                  <button
+                    onClick={resetToZeroData}
+                    className="text-slate-500 hover:text-slate-700 cursor-pointer"
+                  >
+                    Reset Zero
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

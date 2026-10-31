@@ -225,50 +225,65 @@ export default function Sidebar({
 
         {/* Interactive Demo Simulation Controls & Logout inside Sidebar footer */}
         {!isCollapsed ? (
-          <div className="p-3 mx-3 mb-3 rounded-2xl bg-violet-50/60 border border-violet-100/80 text-xs text-slate-600 space-y-2">
-            <div className="flex items-center gap-1.5 font-semibold text-violet-900">
-              <Sparkles className="h-3.5 w-3.5 text-violet-600" />
-              <span>Simulation Tools</span>
+          activeRole === 'hr' ? (
+            <div className="p-3 mx-3 mb-3 rounded-2xl bg-violet-50/60 border border-violet-100/80 text-xs text-slate-600 space-y-2">
+              <div className="flex items-center gap-1.5 font-semibold text-violet-900">
+                <Sparkles className="h-3.5 w-3.5 text-violet-600" />
+                <span>Simulation Tools</span>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-normal">
+                Preload sample records or reset to zero state.
+              </p>
+              <div className="grid grid-cols-2 gap-1.5 pt-1">
+                <button
+                  type="button"
+                  onClick={preloadDemoData}
+                  className="w-full py-1.5 px-2 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg text-[11px] transition-colors cursor-pointer text-center shadow-2xs"
+                >
+                  Load Demo
+                </button>
+                <button
+                  type="button"
+                  onClick={resetToZeroData}
+                  className="w-full py-1.5 px-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-medium rounded-lg text-[11px] transition-colors cursor-pointer text-center"
+                >
+                  Reset Zero
+                </button>
+              </div>
+              <div className="pt-2 border-t border-violet-100/80">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full py-1.5 px-2 text-slate-600 hover:text-rose-600 hover:bg-white/80 rounded-lg text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5 border border-slate-200/50 cursor-pointer"
+                >
+                  <LogOut className="h-3.5 w-3.5 text-slate-500 group-hover:text-rose-600" />
+                  <span>Sign Out of Portal</span>
+                </button>
+              </div>
             </div>
-            <p className="text-[11px] text-slate-500 leading-normal">
-              Preload sample records or reset to zero state.
-            </p>
-            <div className="grid grid-cols-2 gap-1.5 pt-1">
-              <button
-                type="button"
-                onClick={preloadDemoData}
-                className="w-full py-1.5 px-2 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg text-[11px] transition-colors cursor-pointer text-center shadow-2xs"
-              >
-                Load Demo
-              </button>
-              <button
-                type="button"
-                onClick={resetToZeroData}
-                className="w-full py-1.5 px-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-medium rounded-lg text-[11px] transition-colors cursor-pointer text-center"
-              >
-                Reset Zero
-              </button>
-            </div>
-            <div className="pt-2 border-t border-violet-100/80">
+          ) : (
+            <div className="p-3 mx-3 mb-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full py-1.5 px-2 text-slate-600 hover:text-rose-600 hover:bg-white/80 rounded-lg text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5 border border-slate-200/50 cursor-pointer"
+                className="w-full py-2 px-3 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 border border-slate-200/80 cursor-pointer"
               >
-                <LogOut className="h-3.5 w-3.5 text-slate-500 group-hover:text-rose-600" />
+                <LogOut className="h-4 w-4 text-slate-500" />
                 <span>Sign Out of Portal</span>
               </button>
             </div>
-          </div>
+          )
         ) : (
           <div className="p-2 border-t border-slate-100 flex flex-col items-center gap-2">
-            <button
-              onClick={preloadDemoData}
-              title="Load demo data"
-              className="p-2 rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4" />
-            </button>
+            {activeRole === 'hr' && (
+              <button
+                onClick={preloadDemoData}
+                title="Load demo data"
+                className="p-2 rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 cursor-pointer"
+              >
+                <Sparkles className="h-4 w-4" />
+              </button>
+            )}
             <button
               type="button"
               onClick={handleLogout}

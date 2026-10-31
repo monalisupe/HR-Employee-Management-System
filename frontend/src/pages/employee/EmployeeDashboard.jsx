@@ -24,8 +24,6 @@ export default function EmployeeDashboard() {
     onboardingDocuments,
     performanceReviews,
     notifications,
-    createQuickDemoEmployee,
-    switchRole,
   } = useApp();
 
   const employee = currentEmployee;
@@ -66,12 +64,8 @@ export default function EmployeeDashboard() {
 
         <EmptyState
           icon={User}
-          title="No Active Employee Record"
-          description="There are currently zero employees in the system. You can onboard a candidate from the HR Recruitment portal or generate a demo employee profile."
-          actionLabel="Create Demo Employee Profile"
-          onAction={createQuickDemoEmployee}
-          secondaryActionLabel="Switch to HR Dashboard"
-          onSecondaryAction={() => switchRole('hr')}
+          title="No Employee Record Found"
+          description="Please contact your HR administrator."
         />
       </div>
     );

@@ -18,8 +18,6 @@ export default function EmployeeLeave() {
     currentEmployee,
     leaveRequests,
     submitLeaveRequest,
-    createQuickDemoEmployee,
-    switchRole,
   } = useApp();
 
   const employee = currentEmployee;
@@ -91,10 +89,8 @@ export default function EmployeeLeave() {
     return (
       <EmptyState
         icon={CalendarDays}
-        title="No Active Employee Record"
-        description="There is currently no active employee logged into this session."
-        actionLabel="Create Demo Employee"
-        onAction={createQuickDemoEmployee}
+        title="No Employee Record Found"
+        description="Please contact your HR administrator."
       />
     );
   }

@@ -16,7 +16,7 @@ import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
 
 export default function EmployeeProfile() {
-  const { currentEmployee, updateEmployeeProfile, createQuickDemoEmployee } = useApp();
+  const { currentEmployee, updateEmployeeProfile } = useApp();
 
   const employee = currentEmployee;
 
@@ -39,10 +39,8 @@ export default function EmployeeProfile() {
     return (
       <EmptyState
         icon={User}
-        title="No Active Employee Record"
-        description="There is currently no active employee profile selected."
-        actionLabel="Create Demo Employee"
-        onAction={createQuickDemoEmployee}
+        title="No Employee Record Found"
+        description="Please contact your HR administrator."
       />
     );
   }

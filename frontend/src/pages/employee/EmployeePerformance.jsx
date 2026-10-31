@@ -11,7 +11,7 @@ import { useApp } from '../../context/AppContext';
 import EmptyState from '../../components/common/EmptyState';
 
 export default function EmployeePerformance() {
-  const { currentEmployee, performanceReviews, createQuickDemoEmployee } = useApp();
+  const { currentEmployee, performanceReviews } = useApp();
 
   const employee = currentEmployee;
 
@@ -24,10 +24,8 @@ export default function EmployeePerformance() {
     return (
       <EmptyState
         icon={Award}
-        title="No Active Employee Record"
-        description="There is currently no active employee logged into this session."
-        actionLabel="Create Demo Employee"
-        onAction={createQuickDemoEmployee}
+        title="No Employee Record Found"
+        description="Please contact your HR administrator."
       />
     );
   }
