@@ -1,400 +1,401 @@
-
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
-  BriefcaseBusiness,
-  UserRound,
+  Shield,
+  Lock,
   Mail,
-  LockKeyhole,
+  User,
+  Building2,
   Phone,
   Eye,
   EyeOff,
-  CheckCircle2,
   ArrowRight,
-  ShieldCheck,
-} from "lucide-react";
+  CheckCircle2,
+  Briefcase,
+  Users,
+  Sparkles,
+  KeyRound,
+} from 'lucide-react';
+import { useApp } from '../../context/AppContext';
 
 export default function Register() {
   const navigate = useNavigate();
+  const { register, showToast, organization } = useApp();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [accountType, setAccountType] = useState('candidate'); // 'candidate' | 'hr'
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    companyName: 'SecureTenant Systems Inc',
+    password: '',
+    confirmPassword: '',
+    agreeTerms: true,
+  });
+
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleRegister(event) {
-    event.preventDefault();
-    setError("");
-    setMessage("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    if (!name.trim()) {
-      setError("Please enter your full name.");
+    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+      showToast('Validation Error', 'Passwords do not match.', 'error');
       return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setError("Please enter a valid email address.");
-      return;
+    setIsLoading(true);
+
+    try {
+      const res = await register({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        companyName: formData.companyName,
+        password: formData.password,
+        accountType,
+      });
+
+      if (res && res.success) {
+        if (accountType === 'candidate') {
+          navigate('/candidate/dashboard', { replace: true });
+        } else {
+          navigate('/hr/dashboard', { replace: true });
+        }
+      }
+    } catch (err) {
+      showToast('Registration Error', err.message || 'Failed to complete registration', 'error');
+    } finally {
+      setIsLoading(false);
     }
-
-    if (password.length < 8) {
-      setError("Password must contain at least 8 characters.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    if (!acceptedTerms) {
-      setError("Please accept the Terms of Service.");
-      return;
-    }
-
-    setLoading(true);
-
-    // Frontend demo only — no account is saved yet.
-    window.setTimeout(() => {
-      setLoading(false);
-      setMessage("Demo registration successful! Redirecting to login...");
-
-      window.setTimeout(() => {
-        navigate("/login");
-      }, 1500);
-    }, 800);
-  }
-
-  const inputClass =
-    "h-12 w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400";
-
-  const wrapperClass =
-    "flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 transition focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-100";
+  };
 
   return (
-    <main className="min-h-screen w-full bg-white p-3 font-sans text-slate-800 sm:p-5">
-      <div className="mx-auto grid min-h-[calc(100vh-24px)] w-full max-w-7xl grid-cols-1 overflow-hidden rounded-2xl bg-white shadow-xl sm:min-h-[calc(100vh-40px)] lg:grid-cols-2">
+    <div className="min-h-screen bg-slate-50/50 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      {/* Background Decorative Blur */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-violet-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -right-40 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl" />
+      </div>
 
-        {/* LEFT: Branding panel */}
-        <section className="relative flex flex-col overflow-hidden rounded-2xl bg-linear-to-br from-violet-600 via-purple-600 to-violet-800 px-7 py-8 text-white sm:px-12 sm:py-12 lg:rounded-r-none lg:px-14 lg:py-14">
-          <div className="pointer-events-none absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] bg-size-[22px_22px]" />
-          </div>
+      <div className="relative max-w-5xl w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        {/* Left Branding Panel */}
+        <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-slate-900 via-purple-950 to-violet-950 p-10 flex-col justify-between text-white relative overflow-hidden">
+          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-violet-500/20 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute top-12 right-12 w-48 h-48 bg-purple-500/15 rounded-full blur-2xl pointer-events-none" />
 
-          <div className="relative flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/20">
-              <BriefcaseBusiness className="h-6 w-6" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              HireFlow
-            </h1>
-          </div>
-
-          <div className="relative mx-auto my-10 flex w-full max-w-lg flex-1 flex-col justify-center lg:my-0">
-            <span className="mb-5 flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm">
-              <ShieldCheck className="h-4 w-4" />
-              Your career starts here
-            </span>
-
-            <h2 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-              Start your journey
-              <br />
-              with HireFlow
-              <br />
-              today.
-            </h2>
-
-            <p className="mt-6 max-w-md text-base leading-7 text-white/85">
-              Create your candidate account to follow your applications,
-              stay informed about interviews, and access documents shared
-              with you.
-            </p>
-
-            <div className="mt-8 space-y-4">
-              {[
-                "Track your job applications",
-                "Stay updated on interviews",
-                "Access shared recruitment documents",
-              ].map((feature) => (
-                <div key={feature} className="flex items-center gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white/40 bg-white/10">
-                    <CheckCircle2 className="h-4 w-4" />
-                  </span>
-                  <span className="text-sm text-white/95 sm:text-base">
-                    {feature}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <footer className="relative pt-5 text-sm text-white/70">
-            © {new Date().getFullYear()} HireFlow. All rights reserved.
-          </footer>
-        </section>
-
-        {/* RIGHT: Registration form */}
-        <section className="flex items-center justify-center bg-white px-5 py-10 sm:px-10 lg:px-14">
-          <div className="w-full max-w-md">
-            <div className="mb-8 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
-                <UserRound className="h-7 w-7" />
+          {/* Header */}
+          <div className="relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+                <Shield className="h-6 w-6 text-white" />
               </div>
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                  SecureTenant
+                  <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-violet-500/30 border border-violet-400/30 text-violet-200">
+                    Enterprise
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-300">Identity & Tenant Registration</p>
+              </div>
+            </div>
 
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-                Create an account
-              </h2>
-
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Enter your details to get started with HireFlow.
+            <div className="mt-10 space-y-4">
+              <h3 className="text-2xl font-bold leading-tight">
+                Create Your Profile on SecureTenant
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Join our integrated workplace ecosystem. Register as an applicant to explore careers or configure an HR organizational workspace.
               </p>
+            </div>
+          </div>
 
-              <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700">
-                <UserRound className="h-4 w-4" />
-                Candidate Registration
+          {/* Highlights */}
+          <div className="relative z-10 space-y-3.5 my-8">
+            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <CheckCircle2 className="h-5 w-5 text-violet-400 shrink-0 mt-0.5" />
+              <div className="text-xs">
+                <p className="font-semibold text-white">Instant Application Tracking</p>
+                <p className="text-slate-300 mt-0.5">Track your resume stages, interviews, and job offers with zero latency.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <CheckCircle2 className="h-5 w-5 text-violet-400 shrink-0 mt-0.5" />
+              <div className="text-xs">
+                <p className="font-semibold text-white">Digital Document Vault</p>
+                <p className="text-slate-300 mt-0.5">Automated onboarding verification and compliant employee files.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <CheckCircle2 className="h-5 w-5 text-violet-400 shrink-0 mt-0.5" />
+              <div className="text-xs">
+                <p className="font-semibold text-white">Data Privacy Guaranteed</p>
+                <p className="text-slate-300 mt-0.5">Isolated role policies and enterprise grade multi-tenant isolation.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center gap-1.5">
+              <Building2 className="h-4 w-4 text-violet-400" />
+              <span>{organization?.name || 'SecureTenant HQ'}</span>
+            </div>
+            <span className="font-mono text-[11px] bg-white/10 px-2 py-0.5 rounded-md text-slate-300">
+              {organization?.tenantId || 'ST-TENANT-001'}
+            </span>
+          </div>
+        </div>
+
+        {/* Right Panel: Form */}
+        <div className="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-between">
+          <div>
+            {/* Mobile Header Branding */}
+            <div className="flex lg:hidden items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+              <div className="h-10 w-10 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-md shadow-violet-500/20">
+                <Shield className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-slate-900 leading-tight">SecureTenant</h1>
+                <p className="text-xs text-slate-500">Create an account</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Get Started</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Choose your account category and set up your profile
+                </p>
+              </div>
+              <span className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-100">
+                <Sparkles className="h-3 w-3" />
+                Easy Setup
               </span>
             </div>
 
-            <form onSubmit={handleRegister} className="space-y-4">
-              {/* Full name */}
-              <div>
-                <label
-                  htmlFor="register-name"
-                  className="mb-2 block text-sm font-semibold text-slate-700"
+            {/* Account Category Selector */}
+            <div className="mt-6">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                Select Account Type
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setAccountType('candidate')}
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
+                    accountType === 'candidate'
+                      ? 'border-indigo-600 bg-indigo-50/90 text-indigo-900 ring-2 ring-indigo-500/20 shadow-xs'
+                      : 'border-slate-200 bg-slate-50/70 hover:bg-slate-100/70 text-slate-700'
+                  }`}
                 >
-                  Full Name
-                </label>
+                  <div className={`p-2 rounded-xl ${accountType === 'candidate' ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-200 text-slate-600'}`}>
+                    <Briefcase className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold leading-tight">Job Candidate</p>
+                    <p className="text-[11px] opacity-75">Apply to open jobs & track interviews</p>
+                  </div>
+                </button>
 
-                <div className={wrapperClass}>
-                  <UserRound className="h-5 w-5 shrink-0 text-slate-400" />
-                  <input
-                    id="register-name"
-                    type="text"
-                    autoComplete="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter your full name"
-                    className={inputClass}
-                    required
-                  />
+                <button
+                  type="button"
+                  onClick={() => setAccountType('hr')}
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
+                    accountType === 'hr'
+                      ? 'border-violet-600 bg-violet-50/90 text-violet-900 ring-2 ring-violet-500/20 shadow-xs'
+                      : 'border-slate-200 bg-slate-50/70 hover:bg-slate-100/70 text-slate-700'
+                  }`}
+                >
+                  <div className={`p-2 rounded-xl ${accountType === 'hr' ? 'bg-violet-600 text-white' : 'bg-white border border-slate-200 text-slate-600'}`}>
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold leading-tight">HR Administrator</p>
+                    <p className="text-[11px] opacity-75">Manage jobs, staff & operations</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Registration Form */}
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                      <User className="h-4 w-4" />
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      placeholder={accountType === 'candidate' ? 'Alex Rivera' : 'Sarah Jenkins'}
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-600 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Phone Number
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                      <Phone className="h-4 w-4" />
+                    </div>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+1 (555) 019-2834"
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-600 transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Email */}
               <div>
-                <label
-                  htmlFor="register-email"
-                  className="mb-2 block text-sm font-semibold text-slate-700"
-                >
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Email Address
                 </label>
-
-                <div className={wrapperClass}>
-                  <Mail className="h-5 w-5 shrink-0 text-slate-400" />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Mail className="h-4 w-4" />
+                  </div>
                   <input
-                    id="register-email"
                     type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className={inputClass}
                     required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="name@example.com"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-600 transition-all"
                   />
                 </div>
               </div>
 
-              {/* Optional phone */}
-              <div>
-                <label
-                  htmlFor="register-phone"
-                  className="mb-2 block text-sm font-semibold text-slate-700"
-                >
-                  Phone Number <span className="font-normal text-slate-400">(Optional)</span>
-                </label>
+              {accountType === 'hr' && (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Organization / Company
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                      <Building2 className="h-4 w-4" />
+                    </div>
+                    <input
+                      type="text"
+                      value={formData.companyName}
+                      onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                      placeholder="Organization Name"
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-600 transition-all"
+                    />
+                  </div>
+                </div>
+              )}
 
-                <div className={wrapperClass}>
-                  <Phone className="h-5 w-5 shrink-0 text-slate-400" />
-                  <input
-                    id="register-phone"
-                    type="tel"
-                    autoComplete="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Enter your phone number"
-                    className={inputClass}
-                  />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                      <Lock className="h-4 w-4" />
+                    </div>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder="Minimum 8 characters"
+                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-600 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                      <Lock className="h-4 w-4" />
+                    </div>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      placeholder="Confirm password"
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-600 transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Password */}
-              <div>
-                <label
-                  htmlFor="register-password"
-                  className="mb-2 block text-sm font-semibold text-slate-700"
-                >
-                  Password
-                </label>
-
-                <div className={wrapperClass}>
-                  <LockKeyhole className="h-5 w-5 shrink-0 text-slate-400" />
-
-                  <input
-                    id="register-password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Minimum 8 characters"
-                    className={inputClass}
-                    required
-                    minLength={8}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((value) => !value)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    className="shrink-0 text-slate-400 hover:text-violet-600"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Confirm password */}
-              <div>
-                <label
-                  htmlFor="register-confirm-password"
-                  className="mb-2 block text-sm font-semibold text-slate-700"
-                >
-                  Confirm Password
-                </label>
-
-                <div className={wrapperClass}>
-                  <LockKeyhole className="h-5 w-5 shrink-0 text-slate-400" />
-
-                  <input
-                    id="register-confirm-password"
-                    type={showConfirmPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Re-enter your password"
-                    className={inputClass}
-                    required
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowConfirmPassword((value) => !value)
-                    }
-                    aria-label={
-                      showConfirmPassword
-                        ? "Hide confirm password"
-                        : "Show confirm password"
-                    }
-                    className="shrink-0 text-slate-400 hover:text-violet-600"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Terms */}
-              <label className="flex cursor-pointer items-start gap-3 pt-1 text-sm text-slate-600">
+              {/* Terms check */}
+              <div className="flex items-start gap-2 pt-1">
                 <input
                   type="checkbox"
-                  checked={acceptedTerms}
-                  onChange={(e) => setAcceptedTerms(e.target.checked)}
-                  className="mt-1 h-4 w-4 accent-violet-600"
+                  id="agreeTerms"
+                  required
+                  checked={formData.agreeTerms}
+                  onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
+                  className="h-4 w-4 mt-0.5 rounded text-violet-600 focus:ring-violet-500 border-slate-300 cursor-pointer"
                 />
-                <span>
-                  I agree to the{" "}
-                  <a
-                    href="/terms"
-                    onClick={(e) => e.preventDefault()}
-                    className="font-semibold text-violet-600 hover:text-violet-800"
-                  >
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a
-                    href="/privacy"
-                    onClick={(e) => e.preventDefault()}
-                    className="font-semibold text-violet-600 hover:text-violet-800"
-                  >
-                    Privacy Policy
-                  </a>
-                  .
-                </span>
-              </label>
-
-              {/* Error */}
-              {error && (
-                <p
-                  role="alert"
-                  className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-                >
-                  {error}
-                </p>
-              )}
-
-              {/* Success */}
-              {message && (
-                <p
-                  role="status"
-                  className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
-                >
-                  {message}
-                </p>
-              )}
+                <label htmlFor="agreeTerms" className="text-xs text-slate-600 cursor-pointer select-none">
+                  I agree to the <span className="text-violet-600 hover:underline">Terms of Service</span> and acknowledge the <span className="text-violet-600 hover:underline">Privacy Policy</span>.
+                </label>
+              </div>
 
               {/* Submit */}
               <button
                 type="submit"
-                disabled={loading}
-                className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl bg-violet-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 focus:outline-none focus:ring-4 focus:ring-violet-200 disabled:cursor-not-allowed disabled:opacity-70"
+                disabled={isLoading}
+                className="w-full mt-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 active:bg-violet-800 shadow-md shadow-violet-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
-                {loading ? "Creating account..." : "Create Account"}
-                {!loading && <ArrowRight className="h-5 w-5" />}
+                {isLoading ? (
+                  <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>Create My Account</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </button>
             </form>
+          </div>
 
-            {/* Login navigation */}
-            <p className="mt-7 text-center text-sm text-slate-500">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="font-semibold text-violet-600 hover:text-violet-800"
-              >
-                Sign in
+          {/* Footer */}
+          <div className="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <p>
+              Already registered on SecureTenant?{' '}
+              <Link to="/login" className="font-semibold text-violet-600 hover:text-violet-700">
+                Sign In
               </Link>
             </p>
-
-            <p className="mt-5 text-center text-xs leading-5 text-slate-400">
-              Your account will be connected to secure account services
-              when the backend is implemented.
-            </p>
+            <div className="flex items-center gap-2 text-slate-400">
+              <KeyRound className="h-3.5 w-3.5 text-violet-500" />
+              <span>Multi-Tenant Auth</span>
+            </div>
           </div>
-        </section>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
