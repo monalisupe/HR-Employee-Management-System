@@ -39,11 +39,14 @@ import CandidateNotifications from './pages/candidate/CandidateNotifications';
 // Employee Dashboard Pages
 import EmployeeDashboard from './pages/employee/EmployeeDashboard';
 import EmployeeProfile from './pages/employee/EmployeeProfile';
-import EmployeeLeave from './pages/employee/EmployeeLeave';
-import EmployeeHolidays from './pages/employee/EmployeeHolidays';
-import EmployeeOnboarding from './pages/employee/EmployeeOnboarding';
-import EmployeePerformance from './pages/employee/EmployeePerformance';
-import EmployeeNotifications from './pages/employee/EmployeeNotifications';
+import EmployeeLeaveManagement from './pages/employee/LeaveManagement';
+import ApplyLeave from './pages/employee/ApplyLeave';
+import CompanyHolidays from './pages/employee/CompanyHolidays';
+import EmployeeOnboardingDocs from './pages/employee/OnboardingDocuments';
+import UploadDocument from './pages/employee/UploadDocument';
+import EmployeePerformancePage from './pages/employee/Performance';
+import HRSupport from './pages/employee/HRSupport';
+import EmployeeNotificationsPage from './pages/employee/Notifications';
 
 /**
  * RootRedirect enforces:
@@ -153,11 +156,16 @@ export default function App() {
               <Route index element={<Navigate to="/employee/dashboard" replace />} />
               <Route path="dashboard" element={<EmployeeDashboard />} />
               <Route path="profile" element={<EmployeeProfile />} />
-              <Route path="leaves" element={<EmployeeLeave />} />
-              <Route path="holidays" element={<EmployeeHolidays />} />
-              <Route path="onboarding" element={<EmployeeOnboarding />} />
-              <Route path="performance" element={<EmployeePerformance />} />
-              <Route path="notifications" element={<EmployeeNotifications />} />
+              <Route path="leaves" element={<EmployeeLeaveManagement />} />
+              <Route path="leaves/apply" element={<ApplyLeave />} />
+              <Route path="apply-leave" element={<ApplyLeave />} />
+              <Route path="holidays" element={<CompanyHolidays />} />
+              <Route path="onboarding" element={<EmployeeOnboardingDocs />} />
+              <Route path="onboarding/upload" element={<UploadDocument />} />
+              <Route path="upload-document" element={<UploadDocument />} />
+              <Route path="performance" element={<EmployeePerformancePage />} />
+              <Route path="support" element={<HRSupport />} />
+              <Route path="notifications" element={<EmployeeNotificationsPage />} />
             </Route>
           </Route>
 

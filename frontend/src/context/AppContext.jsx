@@ -8,6 +8,7 @@ import {
   initialOpenPositions,
   initialApplicants,
   initialEmployees,
+  defaultEmployee,
   initialLeaveRequests,
   initialHolidays,
   initialOnboardingDocuments,
@@ -15,6 +16,9 @@ import {
   initialInterviews,
   initialNotifications,
   initialActivities,
+  initialSupportRequests,
+  initialNameChangeRequests,
+  initialProfileAuditHistory,
   sampleWalkthroughData,
 } from '../data/mockData.js';
 
@@ -63,10 +67,13 @@ export const AppProvider = ({ children }) => {
   const [performanceReviews, setPerformanceReviews] = useState(initialPerformanceReviews);
   const [notifications, setNotifications] = useState(initialNotifications);
   const [activities, setActivities] = useState(initialActivities);
+  const [supportRequests, setSupportRequests] = useState(initialSupportRequests);
+  const [nameChangeRequests, setNameChangeRequests] = useState(initialNameChangeRequests);
+  const [profileAuditHistory, setProfileAuditHistory] = useState(initialProfileAuditHistory);
 
   // Active Profiles for Candidate and Employee views
   const [currentCandidate, setCurrentCandidate] = useState(initialCandidateProfile);
-  const [currentEmployeeId, setCurrentEmployeeId] = useState(null);
+  const [currentEmployeeId, setCurrentEmployeeId] = useState('emp-101');
 
   // Toast System
   const [toasts, setToasts] = useState([]);
@@ -124,9 +131,11 @@ export const AppProvider = ({ children }) => {
 
   // Helper to get active employee object
   const getActiveEmployee = () => {
-    if (employees.length === 0) return null;
-    const found = employees.find((e) => e.id === currentEmployeeId);
-    return found || employees[0];
+    if (employees && employees.length > 0) {
+      const found = employees.find((e) => e.id === currentEmployeeId);
+      return found || employees[0];
+    }
+    return defaultEmployee;
   };
 
   // Helper to resolve persona metadata
@@ -172,6 +181,12 @@ export const AppProvider = ({ children }) => {
   // Role switching helper with persistent session sync
   const switchRole = (newRole) => {
     setActiveRole(newRole);
+    if (newRole === 'employee') {
+      if (employees.length === 0) {
+        setEmployees([defaultEmployee]);
+      }
+      setCurrentEmployeeId('emp-101');
+    }
     if (currentUser) {
       const updatedUser = getPersonaProfile(newRole, currentUser.email);
       setCurrentUser(updatedUser);
@@ -218,6 +233,13 @@ export const AppProvider = ({ children }) => {
     setIsAuthenticated(true);
     setCurrentUser(userProfile);
     setActiveRole(role);
+
+    if (role === 'employee') {
+      if (employees.length === 0) {
+        setEmployees([defaultEmployee]);
+      }
+      setCurrentEmployeeId('emp-101');
+    }
 
     addActivity(userProfile.name, `Logged in to ${role.toUpperCase()} workspace`, 'CheckCircle');
     showToast('Authentication Successful', `Welcome back, ${userProfile.name}!`);
@@ -765,7 +787,141 @@ export const AppProvider = ({ children }) => {
     setEmployees((prev) =>
       prev.map((emp) => (emp.id === id ? { ...emp, ...updatedProfile } : emp))
     );
-    showToast('Profile Saved', 'Personal information saved.');
+    // Audit history recording for profile adjustments
+    const changedKeys = Object.keys(updatedProfile);
+    const auditEntry = {
+      id: 'audit-' + Date.now(),
+      employeeId: id,
+      action: 'Personal Profile Details Updated',
+      fieldsChanged: changedKeys.join(', '),
+      timestamp: new Date().toLocaleString(),
+      source: 'Employee Self-Service Portal',
+    };
+    setProfileAuditHistory((prev) => [auditEntry, ...prev]);
+    showToast('Profile Saved', 'Personal information successfully saved.');
+  };
+
+  // -------------------------------------------------------------
+  // HR SUPPORT REQUEST WORKFLOW (Employee -> HR)
+  // -------------------------------------------------------------
+  const submitSupportRequest = (ticketData) => {
+    const activeEmp = getActiveEmployee();
+    const newTicket = {
+      ...ticketData,
+      id: 'sup-' + Date.now(),
+      ticketNumber: 'HR-TKT-' + Math.floor(1000 + Math.random() * 9000),
+      employeeId: activeEmp ? activeEmp.id : 'emp-sample',
+      employeeName: activeEmp ? activeEmp.name : 'Employee User',
+      submissionDate: new Date().toISOString().split('T')[0],
+      status: 'Open', // 'Open', 'In Progress', 'Resolved'
+      responseNote: '',
+      resolvedAt: null,
+    };
+    setSupportRequests((prev) => [newTicket, ...prev]);
+    addActivity(newTicket.employeeName, `Submitted HR support ticket: ${newTicket.subject}`, 'LifeBuoy');
+    addNotification('hr', 'New HR Support Ticket', `${newTicket.employeeName} opened a ${newTicket.priority} priority ticket: ${newTicket.subject}`, 'Support');
+    showToast('Support Request Submitted', `Ticket ${newTicket.ticketNumber} submitted successfully.`);
+    return newTicket;
+  };
+
+  const updateSupportRequestStatus = (ticketId, status, responseNote = '') => {
+    setSupportRequests((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              status,
+              responseNote: responseNote || t.responseNote,
+              resolvedAt: status === 'Resolved' ? new Date().toISOString().split('T')[0] : t.resolvedAt,
+            }
+          : t
+      )
+    );
+    showToast('Ticket Updated', `Ticket status updated to ${status}.`);
+  };
+
+  // -------------------------------------------------------------
+  // NAME CHANGE REQUEST WORKFLOW (Employee -> HR)
+  // -------------------------------------------------------------
+  const submitNameChangeRequest = (requestData) => {
+    const activeEmp = getActiveEmployee();
+    const newRequest = {
+      ...requestData,
+      id: 'ncr-' + Date.now(),
+      employeeId: activeEmp ? activeEmp.id : 'emp-sample',
+      employeeName: activeEmp ? activeEmp.name : 'Employee User',
+      currentName: activeEmp ? activeEmp.name : (requestData.currentName || 'Employee User'),
+      submissionDate: new Date().toISOString().split('T')[0],
+      status: 'Pending', // Pending, Approved, Rejected
+      reviewedBy: null,
+      reviewedAt: null,
+      notes: 'Pending review of identity proof documentation by HR Compliance.',
+    };
+    setNameChangeRequests((prev) => [newRequest, ...prev]);
+    addActivity(newRequest.employeeName, `Requested official name change to "${newRequest.requestedName}"`, 'UserCheck');
+    addNotification('hr', 'Name Change Request', `${newRequest.employeeName} requested name update to "${newRequest.requestedName}". Review required.`, 'Profile');
+    showToast('Name Change Request Submitted', 'Submitted to HR Operations for formal review.');
+    return newRequest;
+  };
+
+  const approveNameChangeRequest = (requestId, reviewerNotes = '') => {
+    const req = nameChangeRequests.find((r) => r.id === requestId);
+    if (!req) return;
+    const reviewedAt = new Date().toISOString().split('T')[0];
+    setNameChangeRequests((prev) =>
+      prev.map((r) =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'Approved',
+              reviewedBy: 'Sarah Jenkins (Lead HR Administrator)',
+              reviewedAt,
+              notes: reviewerNotes || 'Verified against supporting legal documents. Name officially updated.',
+            }
+          : r
+      )
+    );
+    // Update the employee's official name
+    setEmployees((prev) =>
+      prev.map((emp) => (emp.id === req.employeeId ? { ...emp, name: req.requestedName } : emp))
+    );
+    // Audit entry
+    setProfileAuditHistory((prev) => [
+      {
+        id: 'audit-' + Date.now(),
+        employeeId: req.employeeId,
+        action: 'Official Legal Name Updated',
+        fieldsChanged: `Official Name changed from "${req.currentName}" to "${req.requestedName}"`,
+        timestamp: new Date().toLocaleString(),
+        source: 'HR Administrator Approval',
+      },
+      ...prev,
+    ]);
+    addActivity('HR Admin', `Approved legal name change for ${req.requestedName}`, 'CheckCircle');
+    addNotification('employee', 'Name Change Approved', `Your official employee name has been updated to "${req.requestedName}".`, 'Profile');
+    showToast('Name Change Approved', `Official name changed to "${req.requestedName}".`);
+  };
+
+  const rejectNameChangeRequest = (requestId, reviewerNotes = '') => {
+    const req = nameChangeRequests.find((r) => r.id === requestId);
+    if (!req) return;
+    const reviewedAt = new Date().toISOString().split('T')[0];
+    setNameChangeRequests((prev) =>
+      prev.map((r) =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'Rejected',
+              reviewedBy: 'Sarah Jenkins (Lead HR Administrator)',
+              reviewedAt,
+              notes: reviewerNotes || 'Supporting legal documentation was insufficient or unverified.',
+            }
+          : r
+      )
+    );
+    addActivity('HR Admin', `Rejected name change request for ${req.employeeName}`, 'XCircle');
+    addNotification('employee', 'Name Change Request Rejected', `Your name change request was rejected. Notes: ${reviewerNotes || 'Documentation unverified.'}`, 'Profile');
+    showToast('Name Change Rejected', 'Name change request was rejected.', 'info');
   };
 
   // -------------------------------------------------------------
@@ -782,6 +938,8 @@ export const AppProvider = ({ children }) => {
     setPerformanceReviews(sampleWalkthroughData.performanceReviews);
     setNotifications(sampleWalkthroughData.notifications);
     setActivities(sampleWalkthroughData.activities);
+    setSupportRequests(sampleWalkthroughData.supportRequests || []);
+    setNameChangeRequests(sampleWalkthroughData.nameChangeRequests || []);
     setCurrentEmployeeId(sampleWalkthroughData.employees[0].id);
     showToast('Demo Data Loaded!', 'Loaded sample positions, applicants, employees, leaves, holidays, and reviews.');
   };
@@ -789,14 +947,17 @@ export const AppProvider = ({ children }) => {
   const resetToZeroData = () => {
     setApplicants([]);
     setInterviews([]);
-    setEmployees([]);
+    setEmployees([defaultEmployee]);
     setLeaveRequests([]);
     setHolidays([]);
     setOnboardingDocuments([]);
     setPerformanceReviews([]);
     setNotifications([]);
     setActivities([]);
-    setCurrentEmployeeId(null);
+    setSupportRequests([]);
+    setNameChangeRequests([]);
+    setProfileAuditHistory([]);
+    setCurrentEmployeeId('emp-101');
     showToast('Reset to Zero State', 'All operational collections are now empty.');
   };
 
@@ -858,6 +1019,9 @@ export const AppProvider = ({ children }) => {
         performanceReviews,
         notifications,
         activities,
+        supportRequests,
+        nameChangeRequests,
+        profileAuditHistory,
 
         // Current Role Focus
         currentCandidate,
@@ -893,6 +1057,11 @@ export const AppProvider = ({ children }) => {
         addPerformanceReview,
         updateCandidateProfile,
         updateEmployeeProfile,
+        submitSupportRequest,
+        updateSupportRequestStatus,
+        submitNameChangeRequest,
+        approveNameChangeRequest,
+        rejectNameChangeRequest,
 
         // Notifications & Activities
         addNotification,

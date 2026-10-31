@@ -20,6 +20,9 @@ import {
   Shield,
   Sparkles,
   LogOut,
+  LifeBuoy,
+  CalendarPlus,
+  UploadCloud,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -70,10 +73,13 @@ export default function Sidebar({
       return [
         { label: 'Overview', path: '/employee/dashboard', icon: LayoutDashboard },
         { label: 'My Profile', path: '/employee/profile', icon: User },
-        { label: 'Leave Requests', path: '/employee/leaves', icon: CalendarDays },
+        { label: 'Leave Management', path: '/employee/leaves', icon: CalendarDays },
+        { label: 'Apply Leave', path: '/employee/apply-leave', icon: CalendarPlus },
         { label: 'Company Holidays', path: '/employee/holidays', icon: Calendar },
         { label: 'Onboarding & Docs', path: '/employee/onboarding', icon: FileCheck },
+        { label: 'Upload Document', path: '/employee/upload-document', icon: UploadCloud },
         { label: 'Performance', path: '/employee/performance', icon: Award },
+        { label: 'HR Support', path: '/employee/support', icon: LifeBuoy },
         { label: 'Notifications', path: '/employee/notifications', icon: Bell },
       ];
     }

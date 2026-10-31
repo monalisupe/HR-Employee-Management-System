@@ -52,12 +52,43 @@ export const initialCandidateProfile = {
   resumeUploadedDate: "2026-03-15",
 };
 
-// Initial clean state according to specifications:
-// Initial applicants: 0
+export const defaultEmployee = {
+  id: "emp-101",
+  employeeCode: "ST-EMP-2026-001",
+  name: "Jordan Hayes",
+  email: "jordan.hayes@securetenant.com",
+  phone: "",
+  dateOfBirth: "",
+  gender: "",
+  department: "IT",
+  designation: "Software Developer",
+  employmentStatus: "Active", // Active, Onboarding, On Leave, Terminated
+  employmentType: "Full-time",
+  joiningDate: "2026-01-15",
+  salary: "$115,000 / year",
+  reportingManager: "Marcus Vance",
+  location: "Austin Headquarters",
+  address: "",
+  city: "",
+  state: "",
+  pinCode: "",
+  emergencyContactName: "",
+  emergencyContactPhone: "",
+  emergencyContactRelationship: "",
+  emergencyContact: "",
+  photoUrl: "",
+  onboardingProgress: 0,
+  annualLeaveBalance: 15,
+  earnedLeaveBalance: 15,
+  sickLeaveBalance: 10,
+  casualLeaveBalance: 7,
+  unpaidLeaveBalance: 0,
+};
+
+// Initial state with active default employee for the Employee Portal:
 export const initialApplicants = [];
 
-// Initial employees: 0
-export const initialEmployees = [];
+export const initialEmployees = [defaultEmployee];
 
 // Initial positions: empty or initialized via HR
 export const initialOpenPositions = [
@@ -94,14 +125,6 @@ export const initialOpenPositions = [
     salaryRange: "$45,000 - $55,000",
   },
 ];
-
-export const initialLeaveRequests = [];
-export const initialHolidays = [];
-export const initialOnboardingDocuments = [];
-export const initialPerformanceReviews = [];
-export const initialInterviews = [];
-export const initialNotifications = [];
-export const initialActivities = [];
 
 // Realistic Preset for 1-Click Interactive Demo Simulation
 export const sampleWalkthroughData = {
@@ -204,19 +227,31 @@ export const sampleWalkthroughData = {
       name: "Jordan Hayes",
       email: "jordan.hayes@securetenant.com",
       phone: "+1 (555) 987-6543",
+      dateOfBirth: "1994-06-15",
+      gender: "Non-Binary",
       department: "IT",
       designation: "Software Developer",
       employmentStatus: "Active", // Active, Onboarding, On Leave, Terminated
       employmentType: "Full-time",
       joiningDate: "2025-11-01",
+      salary: "$115,000 / year",
       reportingManager: "Marcus Vance",
       location: "Austin Headquarters",
+      address: "410 Congress Ave, Suite 500",
+      city: "Austin",
+      state: "Texas",
+      pinCode: "78701",
+      emergencyContactName: "Morgan Hayes",
+      emergencyContactPhone: "+1 (555) 098-1122",
+      emergencyContactRelation: "Spouse",
       emergencyContact: "Morgan Hayes (+1 555-098-1122)",
-      address: "410 Congress Ave, Suite 500, Austin, TX",
+      photoUrl: "",
       onboardingProgress: 100,
       annualLeaveBalance: 14,
+      earnedLeaveBalance: 14,
       sickLeaveBalance: 8,
       casualLeaveBalance: 5,
+      unpaidLeaveBalance: 0,
     },
   ],
   leaveRequests: [
@@ -226,7 +261,7 @@ export const sampleWalkthroughData = {
       employeeName: "Jordan Hayes",
       department: "IT",
       designation: "Software Developer",
-      leaveType: "Annual Leave",
+      leaveType: "Earned",
       startDate: "2026-04-10",
       endDate: "2026-04-14",
       daysCount: 3,
@@ -345,5 +380,64 @@ export const sampleWalkthroughData = {
       icon: "Briefcase",
     },
   ],
+  supportRequests: [
+    {
+      id: "sup-801",
+      ticketNumber: "HR-TKT-4102",
+      employeeId: "emp-101",
+      employeeName: "Jordan Hayes",
+      category: "Salary",
+      subject: "Tax deductions inquiry on March pay stub",
+      description: "Requesting breakdown of federal tax deduction variance between February and March payroll.",
+      priority: "Medium",
+      attachmentName: "March_Payslip_Ref.pdf",
+      submissionDate: "2026-03-20",
+      status: "In Progress", // Open, In Progress, Resolved
+      responseNote: "Assigned to Finance team for payroll recalculation audit.",
+      resolvedAt: null,
+    },
+    {
+      id: "sup-802",
+      ticketNumber: "HR-TKT-3918",
+      employeeId: "emp-101",
+      employeeName: "Jordan Hayes",
+      category: "General HR Query",
+      subject: "Annual Wellness Reimbursement Procedure",
+      description: "Inquiry regarding eligible gym membership reimbursement submission under company health perks.",
+      priority: "Low",
+      attachmentName: "",
+      submissionDate: "2026-02-14",
+      status: "Resolved",
+      responseNote: "Reimbursement claim form link dispatched; expense credited in Feb pay cycle.",
+      resolvedAt: "2026-02-16",
+    },
+  ],
+  nameChangeRequests: [
+    {
+      id: "ncr-101",
+      employeeId: "emp-101",
+      employeeName: "Jordan Hayes",
+      currentName: "Jordan Taylor Hayes",
+      requestedName: "Jordan Hayes",
+      reason: "Legal Name Change",
+      documentName: "Court_Order_Legal_Name_Gazette.pdf",
+      submissionDate: "2025-12-05",
+      status: "Approved", // Pending, Approved, Rejected
+      reviewedBy: "Sarah Jenkins (Lead HR Administrator)",
+      reviewedAt: "2025-12-08",
+      notes: "Official court order documentation validated and updated across federal tax registry.",
+    },
+  ],
 };
+
+export const initialLeaveRequests = [];
+export const initialHolidays = sampleWalkthroughData.holidays;
+export const initialOnboardingDocuments = [];
+export const initialPerformanceReviews = [];
+export const initialInterviews = sampleWalkthroughData.interviews;
+export const initialNotifications = [];
+export const initialActivities = [];
+export const initialSupportRequests = [];
+export const initialNameChangeRequests = [];
+export const initialProfileAuditHistory = [];
 
