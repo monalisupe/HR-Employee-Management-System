@@ -19,3 +19,4 @@ const AttendanceModel = {
 };
 
 module.exports = AttendanceModel;
+

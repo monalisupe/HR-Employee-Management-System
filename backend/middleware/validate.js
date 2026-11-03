@@ -15,3 +15,4 @@ const validate = (validatorFn) => {
 };
 
 module.exports = validate;
+

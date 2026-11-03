@@ -25,3 +25,4 @@ const JobPositionModel = {
 };
 
 module.exports = JobPositionModel;
+

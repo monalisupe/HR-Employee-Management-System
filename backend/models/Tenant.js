@@ -20,3 +20,4 @@ const TenantModel = {
 };
 
 module.exports = TenantModel;
+

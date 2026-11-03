@@ -25,3 +25,4 @@ const PayslipModel = {
 };
 
 module.exports = PayslipModel;
+

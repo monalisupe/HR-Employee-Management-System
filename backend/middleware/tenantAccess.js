@@ -24,3 +24,4 @@ const tenantAccess = (req, res, next) => {
 };
 
 module.exports = tenantAccess;
+

@@ -30,3 +30,4 @@ const OnboardingDocumentModel = {
 };
 
 module.exports = OnboardingDocumentModel;
+

@@ -29,3 +29,4 @@ const ApplicantModel = {
 };
 
 module.exports = ApplicantModel;
+

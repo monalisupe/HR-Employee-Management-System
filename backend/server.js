@@ -1,29 +1,21 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-// require("dotenv").config();
-
-// const app = require("./app");
-// // const connectDB = require("./config/db");
-
-// const PORT = process.env.PORT || 5000;
-
-// // const startServer = async() => {
-// //   await connectDB();
-
-// app.listen(PORT, () => {
-//   console.log(`SecureTenant server running on port ${PORT}`);
-// });
-
-// //}
-
-// startServer();
-
-
-require("dotenv").config();
-
-const app = require("./app");
+const app = require('./app');
+const { connectDB } = require('./config/db');
+const logger = require('./utils/logger');
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`SecureTenant server running on port ${PORT}`);
-});
+const startServer = async () => {
+  // 1. Attempt PostgreSQL connection
+  await connectDB();
+
+  // 2. Start HTTP listener
+  app.listen(PORT, () => {
+    logger.info(`HireFlow / SecureTenant backend running on port ${PORT}`);
+    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+};
+
+startServer();

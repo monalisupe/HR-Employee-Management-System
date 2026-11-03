@@ -17,3 +17,4 @@ const HolidayModel = {
 };
 
 module.exports = HolidayModel;
+

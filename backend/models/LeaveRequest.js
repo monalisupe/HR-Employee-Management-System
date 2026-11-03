@@ -27,3 +27,4 @@ const LeaveRequestModel = {
 };
 
 module.exports = LeaveRequestModel;
+
