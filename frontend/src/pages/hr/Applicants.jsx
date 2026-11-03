@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Users,
   Search,
@@ -39,11 +39,20 @@ export default function Applicants() {
   } = useApp();
 
   // Search & Filters state
+  const [searchParams] = useSearchParams();
+  const urlStatus = searchParams.get('status');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDept, setSelectedDept] = useState('All');
   const [selectedPosition, setSelectedPosition] = useState('All');
   const [selectedRecruiter, setSelectedRecruiter] = useState('All');
-  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [selectedStatus, setSelectedStatus] = useState(urlStatus || 'All');
+
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    if (statusParam) {
+      setSelectedStatus(statusParam);
+    }
+  }, [searchParams]);
 
   // Modals state
   const [selectedAppForDetails, setSelectedAppForDetails] = useState(null);

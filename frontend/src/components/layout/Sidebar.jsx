@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -17,8 +17,7 @@ import {
   FileText,
   ChevronLeft,
   ChevronRight,
-  Shield,
-  Sparkles,
+  ChevronDown,
   LogOut,
   LifeBuoy,
   CalendarPlus,
@@ -41,12 +40,26 @@ export default function Sidebar({
     applicants,
     openPositions,
     leaveRequests,
+    notifications,
     currentCandidate,
     currentEmployee,
-    preloadDemoData,
-    resetToZeroData,
     logout,
   } = useApp();
+
+  // Collapsible navigation groups state
+  const [collapsedGroups, setCollapsedGroups] = useState({
+    WORKSPACE: false,
+    RECRUITMENT: false,
+    WORKFORCE: false,
+    ADMINISTRATION: false,
+  });
+
+  const toggleGroup = (groupTitle) => {
+    setCollapsedGroups((prev) => ({
+      ...prev,
+      [groupTitle]: !prev[groupTitle],
+    }));
+  };
 
   const handleLogout = () => {
     setIsMobileOpen(false);
@@ -54,64 +67,106 @@ export default function Sidebar({
     navigate('/', { replace: true });
   };
 
-  // Role navigation definitions
-  const getNavItems = () => {
-    if (activeRole === 'candidate') {
-      const candidateApps = applicants.filter(
-        (a) => a.candidateId === currentCandidate?.id
-      );
-      const publishedCount = openPositions.filter((p) => p.status === 'Published').length;
-
-      return [
-        { label: 'Overview', path: '/candidate/dashboard', icon: LayoutDashboard },
-        { label: 'Browse Jobs', path: '/candidate/jobs', icon: Briefcase, badge: publishedCount },
-        { label: 'My Applications', path: '/candidate/applications', icon: FileText, badge: candidateApps.length },
-        { label: 'Interviews', path: '/candidate/interviews', icon: Clock },
-        { label: 'Candidate Profile', path: '/candidate/profile', icon: User },
-        { label: 'Notifications', path: '/candidate/notifications', icon: Bell },
-      ];
-    }
-
-    if (activeRole === 'employee') {
-      return [
-        { label: 'Overview', path: '/employee/dashboard', icon: LayoutDashboard },
-        { label: 'My Profile', path: '/employee/profile', icon: User },
-        { label: 'Attendance & Time', path: '/employee/attendance', icon: Clock },
-        { label: 'Payslips & Tax', path: '/employee/payslips', icon: DollarSign },
-        { label: 'Leave Management', path: '/employee/leaves', icon: CalendarDays },
-        { label: 'Apply Leave', path: '/employee/apply-leave', icon: CalendarPlus },
-        { label: 'Company Holidays', path: '/employee/holidays', icon: Calendar },
-        { label: 'Colleague Directory', path: '/employee/directory', icon: Users },
-        { label: 'Digital ID & Assets', path: '/employee/id-card', icon: CreditCard },
-        { label: 'Onboarding & Docs', path: '/employee/onboarding', icon: FileCheck },
-        { label: 'Upload Document', path: '/employee/upload-document', icon: UploadCloud },
-        { label: 'Performance', path: '/employee/performance', icon: Award },
-        { label: 'HR Support', path: '/employee/support', icon: LifeBuoy },
-        { label: 'Notifications', path: '/employee/notifications', icon: Bell },
-      ];
-    }
-
-    // Default: HR Admin
+  // Grouped Navigation definition for HR Admin
+  const getHrGroups = () => {
     const pendingLeaves = leaveRequests.filter((l) => l.status === 'Pending').length;
     const publishedJobs = openPositions.filter((p) => p.status === 'Published').length;
+    const unreadNotifs = notifications.filter((n) => !n.read && (n.recipientRole === 'hr' || n.recipientRole === 'all')).length;
 
     return [
-      { label: 'Dashboard', path: '/hr/dashboard', icon: LayoutDashboard },
-      { label: 'Applicants', path: '/hr/applicants', icon: Users, badge: applicants.length },
-      { label: 'Open Positions', path: '/hr/positions', icon: Briefcase, badge: publishedJobs },
-      { label: 'Employees', path: '/hr/employees', icon: UserCheck },
-      { label: 'Leave Requests', path: '/hr/leaves', icon: CalendarDays, badge: pendingLeaves, badgeColor: 'bg-amber-100 text-amber-800' },
-      { label: 'Holiday Management', path: '/hr/holidays', icon: Calendar },
-      { label: 'Onboarding & Docs', path: '/hr/onboarding', icon: FileCheck },
-      { label: 'Performance', path: '/hr/performance', icon: Award },
-      { label: 'Interviews', path: '/hr/interviews', icon: Clock },
-      { label: 'Reports & Analytics', path: '/hr/reports', icon: BarChart3 },
-      { label: 'Notifications', path: '/hr/notifications', icon: Bell },
-      { label: 'Settings & Org', path: '/hr/settings', icon: Settings },
+      {
+        title: 'WORKSPACE',
+        items: [
+          { label: 'Dashboard', path: '/hr/dashboard', icon: LayoutDashboard },
+        ],
+      },
+      {
+        title: 'RECRUITMENT',
+        items: [
+          { label: 'Applicants', path: '/hr/applicants', icon: Users, badge: applicants.length },
+          { label: 'Open Positions', path: '/hr/positions', icon: Briefcase, badge: publishedJobs },
+          { label: 'Interviews', path: '/hr/interviews', icon: Clock },
+          { label: 'Performance', path: '/hr/performance', icon: Award },
+        ],
+      },
+      {
+        title: 'WORKFORCE',
+        items: [
+          { label: 'Employees', path: '/hr/employees', icon: UserCheck },
+          { label: 'Leave Requests', path: '/hr/leaves', icon: CalendarDays, badge: pendingLeaves, badgeColor: 'bg-amber-100 text-amber-800' },
+          { label: 'Holiday Management', path: '/hr/holidays', icon: Calendar },
+          { label: 'Onboarding & Documents', path: '/hr/onboarding', icon: FileCheck },
+        ],
+      },
+      {
+        title: 'ADMINISTRATION',
+        items: [
+          { label: 'Reports & Analytics', path: '/hr/reports', icon: BarChart3 },
+          { label: 'Notifications', path: '/hr/notifications', icon: Bell, badge: unreadNotifs },
+          { label: 'Settings & Organization', path: '/hr/settings', icon: Settings },
+        ],
+      },
     ];
   };
 
-  const navItems = getNavItems();
+  // Candidate Navigation definition
+  const getCandidateGroups = () => {
+    const candidateApps = applicants.filter((a) => a.candidateId === currentCandidate?.id);
+    const publishedCount = openPositions.filter((p) => p.status === 'Published').length;
+    return [
+      {
+        title: 'CANDIDATE PORTAL',
+        items: [
+          { label: 'Overview', path: '/candidate/dashboard', icon: LayoutDashboard },
+          { label: 'Browse Jobs', path: '/candidate/jobs', icon: Briefcase, badge: publishedCount },
+          { label: 'My Applications', path: '/candidate/applications', icon: FileText, badge: candidateApps.length },
+          { label: 'Interviews', path: '/candidate/interviews', icon: Clock },
+          { label: 'Candidate Profile', path: '/candidate/profile', icon: User },
+          { label: 'Notifications', path: '/candidate/notifications', icon: Bell },
+        ],
+      },
+    ];
+  };
+
+  // Employee Navigation definition
+  const getEmployeeGroups = () => {
+    return [
+      {
+        title: 'WORKPLACE',
+        items: [
+          { label: 'Overview', path: '/employee/dashboard', icon: LayoutDashboard },
+          { label: 'My Profile', path: '/employee/profile', icon: User },
+          { label: 'Attendance & Time', path: '/employee/attendance', icon: Clock },
+          { label: 'Payslips & Tax', path: '/employee/payslips', icon: DollarSign },
+        ],
+      },
+      {
+        title: 'LEAVES & HOLIDAYS',
+        items: [
+          { label: 'Leave Management', path: '/employee/leaves', icon: CalendarDays },
+          { label: 'Apply Leave', path: '/employee/apply-leave', icon: CalendarPlus },
+          { label: 'Company Holidays', path: '/employee/holidays', icon: Calendar },
+        ],
+      },
+      {
+        title: 'DIRECTORY & ASSETS',
+        items: [
+          { label: 'Colleague Directory', path: '/employee/directory', icon: Users },
+          { label: 'Digital ID & Assets', path: '/employee/id-card', icon: CreditCard },
+          { label: 'Onboarding & Docs', path: '/employee/onboarding', icon: FileCheck },
+          { label: 'Performance', path: '/employee/performance', icon: Award },
+          { label: 'HR Support', path: '/employee/support', icon: LifeBuoy },
+        ],
+      },
+    ];
+  };
+
+  const navGroups =
+    activeRole === 'candidate'
+      ? getCandidateGroups()
+      : activeRole === 'employee'
+      ? getEmployeeGroups()
+      : getHrGroups();
 
   const getRoleHeader = () => {
     switch (activeRole) {
@@ -168,7 +223,7 @@ export default function Sidebar({
                 </span>
               </div>
             ) : (
-              <div className="mx-auto">
+              <div className="mx-auto" title="HireFlow HR">
                 <HireFlowLogo size="sm" className="[&>span]:hidden" />
               </div>
             )}
@@ -186,11 +241,11 @@ export default function Sidebar({
 
         {/* Role Pill Indicator in Sidebar */}
         {!isCollapsed && (
-          <div className="px-4 py-3 border-b border-slate-100/70 bg-slate-50/50">
+          <div className="px-4 py-2.5 border-b border-slate-100/70 bg-slate-50/40">
             <div className="flex items-center justify-between">
               <div className="truncate">
                 <p className="text-xs font-semibold text-slate-800 truncate">{roleMeta.sub}</p>
-                <p className="text-[10px] text-slate-500">Connected Workspace</p>
+                <p className="text-[10px] text-slate-400">Connected Organization</p>
               </div>
               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${roleMeta.badgeColor}`}>
                 {roleMeta.badge}
@@ -199,66 +254,97 @@ export default function Sidebar({
           </div>
         )}
 
-        {/* Navigation Items */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
+        {/* Grouped Navigation Items */}
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
+          {navGroups.map((group) => {
+            const isGroupCollapsed = collapsedGroups[group.title];
+
             return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMobileOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${
-                    isActive
-                      ? 'bg-violet-50 text-violet-700 font-semibold shadow-2xs border-r-2 border-violet-600'
-                      : 'text-slate-600 hover:text-violet-700 hover:bg-slate-50'
-                  } ${isCollapsed ? 'justify-center px-2' : ''}`
-                }
-                title={isCollapsed ? item.label : undefined}
-              >
-                <Icon className="h-5 w-5 shrink-0 transition-colors group-hover:text-violet-600" />
-                {!isCollapsed && (
-                  <span className="flex-1 truncate">{item.label}</span>
-                )}
-                {!isCollapsed && typeof item.badge === 'number' && item.badge > 0 && (
-                  <span
-                    className={`ml-auto px-2 py-0.5 text-[11px] font-bold rounded-full ${
-                      item.badgeColor || 'bg-violet-100 text-violet-700'
-                    }`}
+              <div key={group.title} className="space-y-1">
+                {/* Group Title Header (with collapsible toggle on expanded mode) */}
+                {!isCollapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(group.title)}
+                    className="w-full flex items-center justify-between px-3 py-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase hover:text-slate-700 transition-colors cursor-pointer select-none"
                   >
-                    {item.badge}
-                  </span>
+                    <span>{group.title}</span>
+                    <ChevronDown
+                      className={`h-3 w-3 transition-transform duration-200 ${
+                        isGroupCollapsed ? '-rotate-90 text-slate-400' : 'text-slate-400'
+                      }`}
+                    />
+                  </button>
+                ) : (
+                  <div className="h-px bg-slate-100 my-2" />
                 )}
-              </NavLink>
+
+                {/* Items List */}
+                {(!isGroupCollapsed || isCollapsed) && (
+                  <div className="space-y-0.5">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <NavLink
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setIsMobileOpen(false)}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all group ${
+                              isActive
+                                ? 'bg-purple-50/80 text-purple-900 font-bold border-l-3 border-purple-600 shadow-2xs'
+                                : 'text-slate-600 hover:text-purple-700 hover:bg-slate-50/80'
+                            } ${isCollapsed ? 'justify-center px-2 py-2.5' : ''}`
+                          }
+                          title={isCollapsed ? item.label : undefined}
+                        >
+                          <Icon className="h-4.5 w-4.5 shrink-0 transition-colors group-hover:text-purple-600" />
+                          {!isCollapsed && (
+                            <span className="flex-1 truncate">{item.label}</span>
+                          )}
+                          {!isCollapsed && typeof item.badge === 'number' && item.badge > 0 && (
+                            <span
+                              className={`ml-auto px-1.5 py-0.2 text-[10px] font-bold rounded-full ${
+                                item.badgeColor || 'bg-purple-100 text-purple-700'
+                              }`}
+                            >
+                              {item.badge}
+                            </span>
+                          )}
+                        </NavLink>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
 
-        {/* Clean Sidebar Footer with Sign Out */}
-        {!isCollapsed ? (
-          <div className="p-3 mx-3 mb-3 border-t border-slate-100">
+        {/* Clean Sidebar Footer with Logout */}
+        <div className="p-3 border-t border-slate-100 shrink-0">
+          {!isCollapsed ? (
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full py-2.5 px-3 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 border border-slate-200/80 cursor-pointer shadow-2xs"
+              className="w-full py-2 px-3 text-slate-600 hover:text-rose-600 hover:bg-rose-50/70 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 border border-slate-200/80 cursor-pointer shadow-2xs"
             >
-              <LogOut className="h-4 w-4 text-slate-500" />
+              <LogOut className="h-3.5 w-3.5 text-slate-500 group-hover:text-rose-600" />
               <span>Sign Out of Portal</span>
             </button>
-          </div>
-        ) : (
-          <div className="p-2 border-t border-slate-100 flex flex-col items-center gap-2">
-            <button
-              type="button"
-              onClick={handleLogout}
-              title="Sign Out"
-              className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
-        )}
+          ) : (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={handleLogout}
+                title="Sign Out"
+                className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
       </aside>
     </>
   );

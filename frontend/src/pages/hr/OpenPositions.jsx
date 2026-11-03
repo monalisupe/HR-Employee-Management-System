@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Briefcase,
   Plus,
@@ -37,10 +38,16 @@ export default function OpenPositions() {
   const [selectedDept, setSelectedDept] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
 
-  // Modals state
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [isFormOpen, setIsFormOpen] = useState(searchParams.get('create') === 'true');
   const [editingPosition, setEditingPosition] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, pos: null });
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setIsFormOpen(true);
+    }
+  }, [searchParams]);
 
   // Form State
   const initialFormState = {
