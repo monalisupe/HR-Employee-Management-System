@@ -23,8 +23,11 @@ import {
   LifeBuoy,
   CalendarPlus,
   UploadCloud,
+  DollarSign,
+  CreditCard,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import HireFlowLogo from '../common/HireFlowLogo';
 
 export default function Sidebar({
   isCollapsed,
@@ -48,7 +51,7 @@ export default function Sidebar({
   const handleLogout = () => {
     setIsMobileOpen(false);
     logout();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   // Role navigation definitions
@@ -73,9 +76,13 @@ export default function Sidebar({
       return [
         { label: 'Overview', path: '/employee/dashboard', icon: LayoutDashboard },
         { label: 'My Profile', path: '/employee/profile', icon: User },
+        { label: 'Attendance & Time', path: '/employee/attendance', icon: Clock },
+        { label: 'Payslips & Tax', path: '/employee/payslips', icon: DollarSign },
         { label: 'Leave Management', path: '/employee/leaves', icon: CalendarDays },
         { label: 'Apply Leave', path: '/employee/apply-leave', icon: CalendarPlus },
         { label: 'Company Holidays', path: '/employee/holidays', icon: Calendar },
+        { label: 'Colleague Directory', path: '/employee/directory', icon: Users },
+        { label: 'Digital ID & Assets', path: '/employee/id-card', icon: CreditCard },
         { label: 'Onboarding & Docs', path: '/employee/onboarding', icon: FileCheck },
         { label: 'Upload Document', path: '/employee/upload-document', icon: UploadCloud },
         { label: 'Performance', path: '/employee/performance', icon: Award },
@@ -152,18 +159,17 @@ export default function Sidebar({
       >
         {/* Brand & Workspace Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100 shrink-0">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-violet-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-xs shrink-0">
-              <Shield className="h-5 w-5" />
-            </div>
-            {!isCollapsed && (
-              <div className="flex flex-col truncate">
-                <span className="font-bold text-base text-slate-900 leading-tight tracking-tight">
-                  Secure<span className="text-violet-600">Tenant</span>
-                </span>
-                <span className="text-[11px] font-medium text-slate-500 truncate">
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            {!isCollapsed ? (
+              <div className="flex flex-col">
+                <HireFlowLogo size="default" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-600 mt-0.5">
                   {roleMeta.title}
                 </span>
+              </div>
+            ) : (
+              <div className="mx-auto">
+                <HireFlowLogo size="sm" className="[&>span]:hidden" />
               </div>
             )}
           </div>
@@ -229,67 +235,20 @@ export default function Sidebar({
           })}
         </div>
 
-        {/* Interactive Demo Simulation Controls & Logout inside Sidebar footer */}
+        {/* Clean Sidebar Footer with Sign Out */}
         {!isCollapsed ? (
-          activeRole === 'hr' ? (
-            <div className="p-3 mx-3 mb-3 rounded-2xl bg-violet-50/60 border border-violet-100/80 text-xs text-slate-600 space-y-2">
-              <div className="flex items-center gap-1.5 font-semibold text-violet-900">
-                <Sparkles className="h-3.5 w-3.5 text-violet-600" />
-                <span>Simulation Tools</span>
-              </div>
-              <p className="text-[11px] text-slate-500 leading-normal">
-                Preload sample records or reset to zero state.
-              </p>
-              <div className="grid grid-cols-2 gap-1.5 pt-1">
-                <button
-                  type="button"
-                  onClick={preloadDemoData}
-                  className="w-full py-1.5 px-2 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg text-[11px] transition-colors cursor-pointer text-center shadow-2xs"
-                >
-                  Load Demo
-                </button>
-                <button
-                  type="button"
-                  onClick={resetToZeroData}
-                  className="w-full py-1.5 px-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-medium rounded-lg text-[11px] transition-colors cursor-pointer text-center"
-                >
-                  Reset Zero
-                </button>
-              </div>
-              <div className="pt-2 border-t border-violet-100/80">
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="w-full py-1.5 px-2 text-slate-600 hover:text-rose-600 hover:bg-white/80 rounded-lg text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5 border border-slate-200/50 cursor-pointer"
-                >
-                  <LogOut className="h-3.5 w-3.5 text-slate-500 group-hover:text-rose-600" />
-                  <span>Sign Out of Portal</span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="p-3 mx-3 mb-3 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="w-full py-2 px-3 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 border border-slate-200/80 cursor-pointer"
-              >
-                <LogOut className="h-4 w-4 text-slate-500" />
-                <span>Sign Out of Portal</span>
-              </button>
-            </div>
-          )
+          <div className="p-3 mx-3 mb-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full py-2.5 px-3 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 border border-slate-200/80 cursor-pointer shadow-2xs"
+            >
+              <LogOut className="h-4 w-4 text-slate-500" />
+              <span>Sign Out of Portal</span>
+            </button>
+          </div>
         ) : (
           <div className="p-2 border-t border-slate-100 flex flex-col items-center gap-2">
-            {activeRole === 'hr' && (
-              <button
-                onClick={preloadDemoData}
-                title="Load demo data"
-                className="p-2 rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 cursor-pointer"
-              >
-                <Sparkles className="h-4 w-4" />
-              </button>
-            )}
             <button
               type="button"
               onClick={handleLogout}

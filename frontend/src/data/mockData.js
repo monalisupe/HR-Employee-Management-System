@@ -85,13 +85,13 @@ export const defaultEmployee = {
   unpaidLeaveBalance: 0,
 };
 
-// Initial state with active default employee for the Employee Portal:
+// Initial operational collections: start clean at 0 as requested
 export const initialApplicants = [];
+export const initialEmployees = [];
+export const initialOpenPositions = [];
 
-export const initialEmployees = [defaultEmployee];
-
-// Initial positions: empty or initialized via HR
-export const initialOpenPositions = [
+// Preset sample positions (available if needed)
+export const presetSamplePositions = [
   {
     id: "pos-101",
     title: "Senior Python Developer",
@@ -434,10 +434,306 @@ export const initialLeaveRequests = [];
 export const initialHolidays = sampleWalkthroughData.holidays;
 export const initialOnboardingDocuments = [];
 export const initialPerformanceReviews = [];
-export const initialInterviews = sampleWalkthroughData.interviews;
+export const initialInterviews = [];
 export const initialNotifications = [];
 export const initialActivities = [];
 export const initialSupportRequests = [];
 export const initialNameChangeRequests = [];
 export const initialProfileAuditHistory = [];
+
+export const initialPayslips = [
+  {
+    id: "pay-2026-03",
+    employeeId: "emp-101",
+    slipNumber: "ST-PAY-2026-03-019",
+    month: "March 2026",
+    payDate: "2026-03-31",
+    status: "Paid",
+    earnings: {
+      basic: 4500,
+      hra: 2000,
+      specialAllowance: 2283,
+      performanceBonus: 800,
+    },
+    deductions: {
+      providentFund: 575,
+      healthInsurance: 220,
+      taxDeducted: 1450,
+      professionalTax: 50,
+    },
+    grossEarnings: 9583,
+    totalDeductions: 2295,
+    netPay: 7288,
+    bankName: "Chase Manhattan Bank NA",
+    accountMasked: "•••• •••• •••• 8841",
+    panNumber: "ABCDE1234F",
+  },
+  {
+    id: "pay-2026-02",
+    employeeId: "emp-101",
+    slipNumber: "ST-PAY-2026-02-019",
+    month: "February 2026",
+    payDate: "2026-02-28",
+    status: "Paid",
+    earnings: {
+      basic: 4500,
+      hra: 2000,
+      specialAllowance: 2283,
+      performanceBonus: 500,
+    },
+    deductions: {
+      providentFund: 575,
+      healthInsurance: 220,
+      taxDeducted: 1400,
+      professionalTax: 50,
+    },
+    grossEarnings: 9283,
+    totalDeductions: 2245,
+    netPay: 7038,
+    bankName: "Chase Manhattan Bank NA",
+    accountMasked: "•••• •••• •••• 8841",
+    panNumber: "ABCDE1234F",
+  },
+  {
+    id: "pay-2026-01",
+    employeeId: "emp-101",
+    slipNumber: "ST-PAY-2026-01-019",
+    month: "January 2026",
+    payDate: "2026-01-31",
+    status: "Paid",
+    earnings: {
+      basic: 4500,
+      hra: 2000,
+      specialAllowance: 2283,
+      performanceBonus: 0,
+    },
+    deductions: {
+      providentFund: 575,
+      healthInsurance: 220,
+      taxDeducted: 1350,
+      professionalTax: 50,
+    },
+    grossEarnings: 8783,
+    totalDeductions: 2195,
+    netPay: 6588,
+    bankName: "Chase Manhattan Bank NA",
+    accountMasked: "•••• •••• •••• 8841",
+    panNumber: "ABCDE1234F",
+  },
+];
+
+export const initialAttendanceLogs = [
+  {
+    id: "att-001",
+    date: "2026-03-27",
+    day: "Friday",
+    clockIn: "09:02 AM",
+    clockOut: "06:14 PM",
+    workHours: "9h 12m",
+    status: "Present",
+    location: "In Office",
+    notes: "Main Office Austin floor 4",
+  },
+  {
+    id: "att-002",
+    date: "2026-03-26",
+    day: "Thursday",
+    clockIn: "08:55 AM",
+    clockOut: "06:05 PM",
+    workHours: "9h 10m",
+    status: "Present",
+    location: "Remote / WFH",
+    notes: "Approved remote work day",
+  },
+  {
+    id: "att-003",
+    date: "2026-03-25",
+    day: "Wednesday",
+    clockIn: "09:15 AM",
+    clockOut: "06:30 PM",
+    workHours: "9h 15m",
+    status: "Present",
+    location: "In Office",
+    notes: "Sprint review attendance",
+  },
+  {
+    id: "att-004",
+    date: "2026-03-24",
+    day: "Tuesday",
+    clockIn: "09:00 AM",
+    clockOut: "01:30 PM",
+    workHours: "4h 30m",
+    status: "Half-Day",
+    location: "Remote / WFH",
+    notes: "Personal afternoon appointment",
+  },
+  {
+    id: "att-005",
+    date: "2026-03-23",
+    day: "Monday",
+    clockIn: "09:05 AM",
+    clockOut: "06:00 PM",
+    workHours: "8h 55m",
+    status: "Present",
+    location: "In Office",
+    notes: "Architecture sync",
+  },
+];
+
+export const initialColleagues = [
+  {
+    id: "col-1",
+    name: "Marcus Vance",
+    role: "Engineering Manager & IT Lead",
+    department: "IT",
+    email: "marcus.vance@securetenant.com",
+    avatar: "MV",
+    status: "Active",
+    location: "Austin, TX (HQ)",
+    isManager: true,
+  },
+  {
+    id: "col-2",
+    name: "Priya Sharma",
+    role: "Senior Frontend Engineer",
+    department: "IT",
+    email: "priya.sharma@securetenant.com",
+    avatar: "PS",
+    status: "Active",
+    location: "San Jose, CA (Remote)",
+    isPeer: true,
+  },
+  {
+    id: "col-3",
+    name: "Liam O'Connor",
+    role: "DevOps & Cloud Specialist",
+    department: "IT",
+    email: "liam.oconnor@securetenant.com",
+    avatar: "LO",
+    status: "Active",
+    location: "Austin, TX (HQ)",
+    isPeer: true,
+  },
+  {
+    id: "col-4",
+    name: "Maya Lin",
+    role: "QA Automation Engineer",
+    department: "IT",
+    email: "maya.lin@securetenant.com",
+    avatar: "ML",
+    status: "On Leave",
+    location: "Seattle, WA (Remote)",
+    isPeer: true,
+  },
+  {
+    id: "col-5",
+    name: "Sarah Jenkins",
+    role: "Lead HR Talent Partner",
+    department: "HR",
+    email: "sarah.jenkins@securetenant.com",
+    avatar: "SJ",
+    status: "Active",
+    location: "Austin, TX (HQ)",
+    isHR: true,
+  },
+  {
+    id: "col-6",
+    name: "David Chen",
+    role: "Corporate Finance Controller",
+    department: "Finance",
+    email: "david.chen@securetenant.com",
+    avatar: "DC",
+    status: "Active",
+    location: "New York, NY (Remote)",
+  },
+  {
+    id: "col-7",
+    name: "Aisha Patel",
+    role: "BPO Operations Director",
+    department: "BPO",
+    email: "aisha.patel@securetenant.com",
+    avatar: "AP",
+    status: "Active",
+    location: "Dallas, TX",
+  },
+];
+
+export const initialAssets = [
+  {
+    id: "ast-101",
+    name: "MacBook Pro 16\" (M3 Max)",
+    serialNumber: "ST-MBP-8921-X",
+    category: "Laptop",
+    assignedDate: "2026-01-15",
+    condition: "Excellent",
+    status: "Active",
+    specs: "Apple M3 Max 16-Core, 36GB Unified Memory, 1TB SSD",
+  },
+  {
+    id: "ast-102",
+    name: "Dell UltraSharp 27\" 4K USB-C Hub Monitor",
+    serialNumber: "DELL-U2723QE-991",
+    category: "Display",
+    assignedDate: "2026-01-16",
+    condition: "Excellent",
+    status: "Active",
+    specs: "3840 x 2160 IPS, 90W USB-C Power Delivery",
+  },
+  {
+    id: "ast-103",
+    name: "YubiKey 5C NFC Enterprise Security Token",
+    serialNumber: "YK-5C-40918-ENT",
+    category: "Security",
+    assignedDate: "2026-01-15",
+    condition: "Active",
+    status: "Active",
+    specs: "FIDO2 / WebAuthn Hardware Two-Factor Authentication",
+  },
+];
+
+export const initialKudos = [
+  {
+    id: "kudos-1",
+    from: "Marcus Vance",
+    fromAvatar: "MV",
+    fromRole: "Engineering Manager",
+    to: "Jordan Hayes",
+    toAvatar: "JH",
+    badge: "Problem Solver",
+    badgeIcon: "Sparkles",
+    message: "Incredible speed resolving the multi-tenant database connection pool bottleneck ahead of production cutover!",
+    timestamp: "Yesterday at 4:30 PM",
+    likes: 6,
+    hasLiked: false,
+  },
+  {
+    id: "kudos-2",
+    from: "Priya Sharma",
+    fromAvatar: "PS",
+    fromRole: "Senior Frontend Engineer",
+    to: "Jordan Hayes",
+    toAvatar: "JH",
+    badge: "Team Player",
+    badgeIcon: "Heart",
+    message: "Huge thank you for pairing on the employee self-service forms and making accessibility standard across all inputs!",
+    timestamp: "2 days ago",
+    likes: 4,
+    hasLiked: false,
+  },
+  {
+    id: "kudos-3",
+    from: "Jordan Hayes",
+    fromAvatar: "JH",
+    fromRole: "Software Developer",
+    to: "Liam O'Connor",
+    toAvatar: "LO",
+    badge: "Innovation Leader",
+    badgeIcon: "Zap",
+    message: "The new automated Docker staging pipeline reduced PR build verification cycles by over 50%. Super smooth!",
+    timestamp: "3 days ago",
+    likes: 8,
+    hasLiked: true,
+  },
+];
+
 

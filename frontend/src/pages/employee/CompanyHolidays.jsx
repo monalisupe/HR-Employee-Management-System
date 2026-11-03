@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, List, Grid } from 'lucide-react';
+import { Calendar, List, Grid, CalendarPlus, Download } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { exportHolidaysToICS } from '../../utils/calendarSync';
 import EmployeeEmptyState from './components/EmployeeEmptyState';
 
 export default function CompanyHolidays() {
@@ -35,7 +36,17 @@ export default function CompanyHolidays() {
         </div>
 
         {holidays.length > 0 && (
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => exportHolidaysToICS(holidays, 'SecureTenant Enterprise')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-200 rounded-xl transition-colors cursor-pointer"
+              title="Download standard .ics file for Google Calendar, Outlook, and Apple Calendar"
+            >
+              <CalendarPlus className="h-3.5 w-3.5" />
+              <span>Sync to Calendar (.ics)</span>
+            </button>
+
             <div className="bg-slate-100 p-1 rounded-xl flex items-center">
               <button
                 type="button"

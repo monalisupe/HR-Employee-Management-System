@@ -13,7 +13,7 @@ const statusConfig = {
     bg: 'bg-amber-50',
     text: 'text-amber-700',
     border: 'border-amber-200',
-    dot: 'bg-amber-500',
+    dot: 'bg-amber-500 animate-pulse',
     label: 'Under Review',
   },
   shortlisted: {
@@ -73,7 +73,7 @@ const statusConfig = {
     bg: 'bg-amber-50',
     text: 'text-amber-700',
     border: 'border-amber-200',
-    dot: 'bg-amber-500',
+    dot: 'bg-amber-500 animate-pulse',
     label: 'Pending',
   },
   approved: {
@@ -163,14 +163,14 @@ const statusConfig = {
     bg: 'bg-amber-50',
     text: 'text-amber-700',
     border: 'border-amber-200',
-    dot: 'bg-amber-500',
+    dot: 'bg-amber-500 animate-pulse',
     label: 'Open',
   },
   'in progress': {
     bg: 'bg-blue-50',
     text: 'text-blue-700',
     border: 'border-blue-200',
-    dot: 'bg-blue-500',
+    dot: 'bg-blue-500 animate-pulse',
     label: 'In Progress',
   },
   resolved: {

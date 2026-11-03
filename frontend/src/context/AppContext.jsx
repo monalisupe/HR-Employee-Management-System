@@ -19,36 +19,26 @@ import {
   initialSupportRequests,
   initialNameChangeRequests,
   initialProfileAuditHistory,
+  initialPayslips,
+  initialAttendanceLogs,
+  initialColleagues,
+  initialAssets,
+  initialKudos,
   sampleWalkthroughData,
 } from '../data/mockData.js';
 
 const AUTH_STORAGE_KEY = 'securetenant_auth_session';
 
-const loadStoredSession = () => {
-  try {
-    const raw = typeof window !== 'undefined' ? localStorage.getItem(AUTH_STORAGE_KEY) : null;
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed && parsed.isAuthenticated && parsed.currentUser) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error('Error reading auth session from localStorage:', err);
-  }
-  return null;
-};
-
 const AppContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
   // Session Authentication & Active User
-  const initialSession = loadStoredSession();
-  const [isAuthenticated, setIsAuthenticated] = useState(!!initialSession);
-  const [currentUser, setCurrentUser] = useState(initialSession?.currentUser || null);
+  // Always begin at /login as requested; user selects role/designation and logs in to access their dashboard
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   // Active Role: 'hr' | 'candidate' | 'employee'
-  const [activeRole, setActiveRole] = useState(initialSession?.currentUser?.role || 'hr');
+  const [activeRole, setActiveRole] = useState('hr');
 
   // Multi-tenant & Organization Core Data
   const [organization, setOrganization] = useState(initialOrganization);
@@ -70,6 +60,37 @@ export const AppProvider = ({ children }) => {
   const [supportRequests, setSupportRequests] = useState(initialSupportRequests);
   const [nameChangeRequests, setNameChangeRequests] = useState(initialNameChangeRequests);
   const [profileAuditHistory, setProfileAuditHistory] = useState(initialProfileAuditHistory);
+
+  // Advanced Employee Workplace Additions
+  const [payslips, setPayslips] = useState(initialPayslips || []);
+  const [attendanceLogs, setAttendanceLogs] = useState(initialAttendanceLogs || []);
+  const [colleagues, setColleagues] = useState(initialColleagues || []);
+  const [assets, setAssets] = useState(initialAssets || []);
+  const [kudos, setKudos] = useState(initialKudos || []);
+
+  // Web Clock-in / Attendance Session State
+  const [clockInState, setClockInState] = useState({
+    isClockedIn: false,
+    clockInTime: null,
+    workStatus: 'In Office', // 'In Office' | 'Remote / WFH' | 'On Break'
+    elapsedSeconds: 0,
+  });
+
+  // Running work hours timer
+  useEffect(() => {
+    let interval = null;
+    if (clockInState.isClockedIn) {
+      interval = setInterval(() => {
+        setClockInState((prev) => ({
+          ...prev,
+          elapsedSeconds: prev.elapsedSeconds + 1,
+        }));
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [clockInState.isClockedIn]);
 
   // Active Profiles for Candidate and Employee views
   const [currentCandidate, setCurrentCandidate] = useState(initialCandidateProfile);
@@ -816,6 +837,16 @@ export const AppProvider = ({ children }) => {
       status: 'Open', // 'Open', 'In Progress', 'Resolved'
       responseNote: '',
       resolvedAt: null,
+      messages: [
+        {
+          id: 'msg-' + Date.now(),
+          sender: activeEmp ? activeEmp.name : 'Employee User',
+          senderRole: 'employee',
+          text: ticketData.description,
+          timestamp: 'Today at ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          attachmentName: ticketData.attachmentName || '',
+        },
+      ],
     };
     setSupportRequests((prev) => [newTicket, ...prev]);
     addActivity(newTicket.employeeName, `Submitted HR support ticket: ${newTicket.subject}`, 'LifeBuoy');
@@ -824,20 +855,187 @@ export const AppProvider = ({ children }) => {
     return newTicket;
   };
 
+  const addSupportTicketMessage = (ticketId, messageText, attachmentName = '') => {
+    const activeEmp = getActiveEmployee();
+    const newMsg = {
+      id: 'msg-' + Date.now(),
+      sender: activeEmp ? activeEmp.name : 'Jordan Hayes',
+      senderRole: 'employee',
+      text: messageText,
+      timestamp: 'Today at ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      attachmentName,
+    };
+
+    setSupportRequests((prev) =>
+      prev.map((t) => {
+        if (t.id === ticketId) {
+          const currentMsgs = t.messages || [
+            {
+              id: 'msg-init-' + t.id,
+              sender: t.employeeName,
+              senderRole: 'employee',
+              text: t.description,
+              timestamp: t.submissionDate,
+              attachmentName: t.attachmentName || '',
+            },
+          ];
+          return {
+            ...t,
+            messages: [...currentMsgs, newMsg],
+          };
+        }
+        return t;
+      })
+    );
+    showToast('Reply Added', 'Your response was posted to the support ticket thread.');
+  };
+
   const updateSupportRequestStatus = (ticketId, status, responseNote = '') => {
     setSupportRequests((prev) =>
-      prev.map((t) =>
-        t.id === ticketId
-          ? {
-              ...t,
-              status,
-              responseNote: responseNote || t.responseNote,
-              resolvedAt: status === 'Resolved' ? new Date().toISOString().split('T')[0] : t.resolvedAt,
-            }
-          : t
-      )
+      prev.map((t) => {
+        if (t.id === ticketId) {
+          const updated = {
+            ...t,
+            status,
+            responseNote: responseNote || t.responseNote,
+            resolvedAt: status === 'Resolved' ? new Date().toISOString().split('T')[0] : t.resolvedAt,
+          };
+          if (responseNote) {
+            const hrMsg = {
+              id: 'msg-hr-' + Date.now(),
+              sender: 'Sarah Jenkins (HR Operations)',
+              senderRole: 'hr',
+              text: responseNote,
+              timestamp: 'Today at ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            };
+            updated.messages = [...(t.messages || []), hrMsg];
+          }
+          return updated;
+        }
+        return t;
+      })
     );
     showToast('Ticket Updated', `Ticket status updated to ${status}.`);
+  };
+
+  // -------------------------------------------------------------
+  // ATTENDANCE & WEB CLOCK-IN WORKFLOWS
+  // -------------------------------------------------------------
+  const clockIn = (status = 'In Office') => {
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setClockInState({
+      isClockedIn: true,
+      clockInTime: nowTime,
+      workStatus: status,
+      elapsedSeconds: 0,
+    });
+    addActivity('Jordan Hayes', `Clocked in for work (${status}) at ${nowTime}`, 'Clock');
+    showToast('Clocked In Successfully', `Work session started at ${nowTime} (${status}).`);
+  };
+
+  const clockOut = () => {
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const hours = Math.floor(clockInState.elapsedSeconds / 3600);
+    const mins = Math.floor((clockInState.elapsedSeconds % 3600) / 60);
+    const durationStr = `${hours}h ${mins}m`;
+
+    const newLog = {
+      id: 'att-' + Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      day: new Date().toLocaleDateString('en-US', { weekday: 'long' }),
+      clockIn: clockInState.clockInTime || '09:00 AM',
+      clockOut: nowTime,
+      workHours: durationStr,
+      status: 'Present',
+      location: clockInState.workStatus,
+      notes: 'Completed web punch session',
+    };
+    setAttendanceLogs((prev) => [newLog, ...prev]);
+    setClockInState((prev) => ({
+      ...prev,
+      isClockedIn: false,
+      clockInTime: null,
+      elapsedSeconds: 0,
+    }));
+    addActivity('Jordan Hayes', `Clocked out at ${nowTime}. Total logged: ${durationStr}`, 'Clock');
+    showToast('Clocked Out', `Session finished. Total recorded: ${durationStr}.`);
+  };
+
+  const setWorkStatus = (status) => {
+    setClockInState((prev) => ({ ...prev, workStatus: status }));
+    showToast('Status Updated', `Work status set to ${status}.`, 'info');
+  };
+
+  const requestAttendanceRegularization = (data) => {
+    const newLog = {
+      id: 'att-reg-' + Date.now(),
+      date: data.date,
+      day: new Date(data.date).toLocaleDateString('en-US', { weekday: 'long' }),
+      clockIn: data.clockIn,
+      clockOut: data.clockOut,
+      workHours: data.workHours || '8h 30m',
+      status: 'Present (Regularized)',
+      location: data.location || 'In Office',
+      notes: `Regularized: ${data.reason}`,
+    };
+    setAttendanceLogs((prev) => [newLog, ...prev]);
+    addNotification('hr', 'Attendance Regularization Request', `Jordan Hayes requested attendance regularization for ${data.date}.`, 'Attendance');
+    showToast('Regularization Submitted', `Attendance for ${data.date} regularized and submitted to HR.`);
+  };
+
+  // -------------------------------------------------------------
+  // ASSET & HARDWARE WORKFLOWS
+  // -------------------------------------------------------------
+  const requestAssetUpgrade = (assetId, reason) => {
+    const asset = assets.find((a) => a.id === assetId);
+    addNotification('hr', 'Asset Upgrade Request', `Jordan Hayes requested upgrade for ${asset ? asset.name : 'Hardware Asset'}: ${reason}`, 'Asset');
+    showToast('Upgrade Request Sent', 'IT Operations will review your equipment upgrade request.');
+  };
+
+  const reportAssetIssue = (assetId, issueDescription) => {
+    const asset = assets.find((a) => a.id === assetId);
+    addNotification('hr', 'Equipment Issue Reported', `Jordan Hayes reported issue on ${asset ? asset.name : 'Hardware Asset'}: ${issueDescription}`, 'Asset');
+    showToast('Issue Reported', 'Ticket dispatched to IT Support Helpdesk.');
+  };
+
+  // -------------------------------------------------------------
+  // PEER KUDOS & RECOGNITION WORKFLOWS
+  // -------------------------------------------------------------
+  const sendKudos = ({ to, badge, message }) => {
+    const activeEmp = getActiveEmployee();
+    const newKudo = {
+      id: 'kudos-' + Date.now(),
+      from: activeEmp ? activeEmp.name : 'Jordan Hayes',
+      fromAvatar: activeEmp ? activeEmp.name.substring(0, 2).toUpperCase() : 'JH',
+      fromRole: activeEmp ? activeEmp.designation : 'Software Developer',
+      to,
+      toAvatar: to.substring(0, 2).toUpperCase(),
+      badge,
+      badgeIcon: 'Sparkles',
+      message,
+      timestamp: 'Just now',
+      likes: 1,
+      hasLiked: true,
+    };
+    setKudos((prev) => [newKudo, ...prev]);
+    addNotification('employee', 'New Kudos Received! 🎉', `${newKudo.from} awarded you a "${badge}" badge!`, 'Recognition');
+    addActivity(newKudo.from, `Gave "${badge}" Kudos to ${to}`, 'Award');
+    showToast('Kudos Sent!', `Your appreciation was shared with ${to} on the Wall of Fame.`);
+    return newKudo;
+  };
+
+  const toggleLikeKudos = (id) => {
+    setKudos((prev) =>
+      prev.map((k) =>
+        k.id === id
+          ? {
+              ...k,
+              likes: k.hasLiked ? k.likes - 1 : k.likes + 1,
+              hasLiked: !k.hasLiked,
+            }
+          : k
+      )
+    );
   };
 
   // -------------------------------------------------------------
@@ -1059,9 +1257,28 @@ export const AppProvider = ({ children }) => {
         updateEmployeeProfile,
         submitSupportRequest,
         updateSupportRequestStatus,
+        addSupportTicketMessage,
         submitNameChangeRequest,
         approveNameChangeRequest,
         rejectNameChangeRequest,
+
+        // Advanced Employee Portal Modules
+        payslips,
+        setPayslips,
+        attendanceLogs,
+        clockInState,
+        clockIn,
+        clockOut,
+        setWorkStatus,
+        requestAttendanceRegularization,
+        colleagues,
+        setColleagues,
+        assets,
+        requestAssetUpgrade,
+        reportAssetIssue,
+        kudos,
+        sendKudos,
+        toggleLikeKudos,
 
         // Notifications & Activities
         addNotification,

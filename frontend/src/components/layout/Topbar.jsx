@@ -12,6 +12,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import HireFlowLogo from '../common/HireFlowLogo';
 
 export default function Topbar({ setIsMobileOpen }) {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ export default function Topbar({ setIsMobileOpen }) {
 
   const handleLogout = () => {
     logout();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   // Filter notifications relevant to current role
@@ -109,7 +110,7 @@ export default function Topbar({ setIsMobileOpen }) {
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 lg:px-8 flex items-center justify-between shadow-2xs">
-      {/* Left: Mobile hamburger & Tenant status tag */}
+      {/* Left: Mobile hamburger, Logo & Tenant status tag */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => setIsMobileOpen(true)}
@@ -119,15 +120,19 @@ export default function Topbar({ setIsMobileOpen }) {
           <Menu className="h-5 w-5" />
         </button>
 
+        <div className="md:hidden">
+          <HireFlowLogo size="sm" />
+        </div>
+
         <div className="hidden sm:flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-50 border border-violet-100/80 text-violet-700 text-xs font-semibold">
-            <Shield className="h-3.5 w-3.5 text-violet-600" />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-100/80 text-purple-700 text-xs font-semibold">
+            <Shield className="h-3.5 w-3.5 text-purple-600" />
             <span>{organization?.tenantId || 'ST-TENANT-001'}</span>
           </div>
           <div className="flex items-center gap-1 text-xs text-slate-500">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="hidden md:inline font-medium text-slate-600">{organization?.name || 'SecureTenant'}</span>
-            <span className="hidden lg:inline text-slate-400">• Workspace Active</span>
+            <span className="hidden md:inline font-medium text-slate-600">{organization?.name || 'HireFlow HR Cloud'}</span>
+            <span className="hidden lg:inline text-slate-400">• Active</span>
           </div>
         </div>
       </div>
@@ -201,23 +206,6 @@ export default function Topbar({ setIsMobileOpen }) {
                   </div>
                 </button>
               </div>
-
-              {activeRole === 'hr' && (
-                <div className="mt-2 pt-2 border-t border-slate-100 px-2 flex justify-between items-center text-[11px] text-slate-600">
-                  <button
-                    onClick={preloadDemoData}
-                    className="text-violet-600 hover:text-violet-800 font-medium cursor-pointer"
-                  >
-                    Load Demo Data
-                  </button>
-                  <button
-                    onClick={resetToZeroData}
-                    className="text-slate-500 hover:text-slate-700 cursor-pointer"
-                  >
-                    Reset Zero
-                  </button>
-                </div>
-              )}
             </div>
           )}
         </div>

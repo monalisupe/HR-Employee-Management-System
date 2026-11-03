@@ -47,6 +47,10 @@ import UploadDocument from './pages/employee/UploadDocument';
 import EmployeePerformancePage from './pages/employee/Performance';
 import HRSupport from './pages/employee/HRSupport';
 import EmployeeNotificationsPage from './pages/employee/Notifications';
+import Payslips from './pages/employee/Payslips';
+import Attendance from './pages/employee/Attendance';
+import ColleagueDirectory from './pages/employee/ColleagueDirectory';
+import DigitalIDAndAssets from './pages/employee/DigitalIDAndAssets';
 
 /**
  * RootRedirect enforces:
@@ -95,26 +99,10 @@ export default function App() {
     <AppProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Auth Routes (Redirects to dashboard if already logged in) */}
-          <Route
-            path="/login"
-            element={
-              <PublicAuthRoute>
-                <Login />
-              </PublicAuthRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicAuthRoute>
-                <Register />
-              </PublicAuthRoute>
-            }
-          />
-
-          {/* Root Route: strictly directs to Login if not logged in, or Dashboard if authenticated */}
-          <Route path="/" element={<RootRedirect />} />
+          {/* Root & Auth Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
           {/* Protected HR Management Dashboard Routes */}
           <Route element={<ProtectedRoute allowedRole="hr" />}>
@@ -164,6 +152,11 @@ export default function App() {
               <Route path="onboarding/upload" element={<UploadDocument />} />
               <Route path="upload-document" element={<UploadDocument />} />
               <Route path="performance" element={<EmployeePerformancePage />} />
+              <Route path="payslips" element={<Payslips />} />
+              <Route path="attendance" element={<Attendance />} />
+              <Route path="directory" element={<ColleagueDirectory />} />
+              <Route path="id-card" element={<DigitalIDAndAssets />} />
+              <Route path="assets" element={<DigitalIDAndAssets />} />
               <Route path="support" element={<HRSupport />} />
               <Route path="notifications" element={<EmployeeNotificationsPage />} />
             </Route>

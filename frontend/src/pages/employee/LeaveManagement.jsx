@@ -5,8 +5,10 @@ import {
   Plus,
   FileText,
   Search,
+  CalendarPlus,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { exportLeavesToICS } from '../../utils/calendarSync';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmployeeEmptyState from './components/EmployeeEmptyState';
 
@@ -78,20 +80,34 @@ export default function LeaveManagement() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => navigate('/employee/apply-leave')}
-          className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl shadow-xs transition-colors cursor-pointer self-start sm:self-auto"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Apply for Leave</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+          {myLeaves.some((l) => l.status === 'Approved') && (
+            <button
+              type="button"
+              onClick={() => exportLeavesToICS(myLeaves, employee.name)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-200 rounded-xl transition-colors cursor-pointer"
+              title="Sync approved leave dates into Google Calendar or Outlook"
+            >
+              <CalendarPlus className="h-4 w-4" />
+              <span>Export Leaves (.ics)</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => navigate('/employee/apply-leave')}
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 rounded-xl shadow-xs transition-colors cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Apply for Leave</span>
+          </button>
+        </div>
       </div>
 
       {/* 2. Balance KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Casual Leave */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-violet-200 transition-all duration-200">
           <span className="text-xs font-semibold uppercase text-slate-400">Casual Leave</span>
           <p className="text-3xl font-bold text-violet-700 mt-2">
             {casualBalance}
@@ -101,7 +117,7 @@ export default function LeaveManagement() {
         </div>
 
         {/* Sick Leave */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-indigo-200 transition-all duration-200">
           <span className="text-xs font-semibold uppercase text-slate-400">Sick / Medical Leave</span>
           <p className="text-3xl font-bold text-indigo-700 mt-2">
             {sickBalance}
@@ -111,7 +127,7 @@ export default function LeaveManagement() {
         </div>
 
         {/* Earned Leave */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-purple-200 transition-all duration-200">
           <span className="text-xs font-semibold uppercase text-slate-400">Earned / Annual Leave</span>
           <p className="text-3xl font-bold text-purple-700 mt-2">
             {earnedBalance}
@@ -121,7 +137,7 @@ export default function LeaveManagement() {
         </div>
 
         {/* Unpaid Leave */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-slate-300 transition-all duration-200">
           <span className="text-xs font-semibold uppercase text-slate-400">Unpaid Leave (LOP)</span>
           <p className="text-3xl font-bold text-slate-700 mt-2">
             {unpaidCount}

@@ -13,10 +13,15 @@ import {
   Lock,
   Phone,
   HeartHandshake,
+  DollarSign,
+  Clock,
+  Users,
+  CreditCard,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmployeeEmptyState from './components/EmployeeEmptyState';
+import KudosFeedWidget from './components/KudosFeedWidget';
 
 export default function EmployeeDashboard() {
   const navigate = useNavigate();
@@ -81,55 +86,73 @@ export default function EmployeeDashboard() {
   return (
     <div className="space-y-6">
       {/* 1. Welcome Banner */}
-      <div className="bg-gradient-to-r from-violet-700 via-purple-700 to-indigo-800 rounded-2xl p-6 text-white shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-white text-xl font-bold border border-white/30 shrink-0 shadow-xs overflow-hidden">
-              {employee.photoUrl ? (
-                <img
-                  src={employee.photoUrl}
-                  alt={employee.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                employee.name.substring(0, 2).toUpperCase()
-              )}
+      <div className="relative overflow-hidden bg-gradient-to-r from-violet-700 via-purple-700 to-indigo-800 rounded-3xl p-6 md:p-8 text-white shadow-md border border-white/10">
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 -mb-12 w-48 h-48 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="relative shrink-0">
+              <div className="h-20 w-20 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl font-bold border-2 border-white/40 shadow-inner overflow-hidden">
+                {employee.photoUrl ? (
+                  <img
+                    src={employee.photoUrl}
+                    alt={employee.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  employee.name.substring(0, 2).toUpperCase()
+                )}
+              </div>
+              <span
+                className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-emerald-500 border-2 border-white shadow-xs"
+                title="Workspace Active & Verified"
+              />
             </div>
+
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-violet-200">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-xs text-violet-100 border border-white/20">
                   {employee.department} Department
                 </span>
-                <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-white/20 text-white border border-white/20">
+                <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-black/20 text-white border border-white/10">
                   {employee.employeeCode}
                 </span>
+                <span className="text-[11px] text-emerald-300 font-semibold flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Verified Active
+                </span>
               </div>
-              <h1 className="text-2xl font-bold mt-1 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-extrabold mt-1.5 tracking-tight">
                 Welcome back, {employee.name}!
               </h1>
-              <p className="text-xs sm:text-sm text-violet-100 mt-0.5">
-                {employee.designation} • Joined {employee.joiningDate}
+              <p className="text-xs sm:text-sm text-violet-100 mt-1 flex items-center gap-2">
+                <span>{employee.designation}</span>
+                <span>•</span>
+                <span>Joined {employee.joiningDate}</span>
+                <span>•</span>
+                <span>Direct Manager: {employee.reportingManager || 'Marcus Vance'}</span>
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto">
+          <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
             <button
               type="button"
-              onClick={() => navigate('/employee/apply-leave')}
-              className="px-4 py-2 bg-white text-violet-900 hover:bg-violet-50 text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-2"
+              onClick={() => navigate('/employee/attendance')}
+              className="px-4 py-2.5 bg-white text-violet-900 hover:bg-violet-50 text-xs sm:text-sm font-bold rounded-xl shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
             >
-              <CalendarDays className="h-4 w-4 text-violet-700" />
-              <span>Apply Leave</span>
+              <Clock className="h-4 w-4 text-violet-700" />
+              <span>Punch Clock</span>
             </button>
 
             <button
               type="button"
-              onClick={() => navigate('/employee/upload-document')}
-              className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs sm:text-sm font-semibold rounded-xl transition-colors cursor-pointer flex items-center gap-2"
+              onClick={() => navigate('/employee/apply-leave')}
+              className="px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white border border-white/25 text-xs sm:text-sm font-semibold rounded-xl backdrop-blur-xs transition-all active:scale-95 cursor-pointer flex items-center gap-2"
             >
-              <UploadCloud className="h-4 w-4" />
-              <span>Upload Doc</span>
+              <CalendarDays className="h-4 w-4" />
+              <span>Apply Leave</span>
             </button>
           </div>
         </div>
@@ -138,15 +161,15 @@ export default function EmployeeDashboard() {
       {/* 2. KPI Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Leave Balance */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-violet-200 transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-500">Earned Leave</span>
-            <div className="p-2 rounded-xl bg-violet-50 border border-violet-100 text-violet-600">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Earned Leave</span>
+            <div className="p-2.5 rounded-xl bg-violet-50 border border-violet-100 text-violet-600">
               <CalendarDays className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">
-            {leaveBalance} Days
+          <p className="text-3xl font-bold text-slate-900 mt-3 tracking-tight">
+            {leaveBalance} <span className="text-sm font-normal text-slate-400">Days</span>
           </p>
           <span className="text-[11px] text-slate-500 mt-1 block">
             {pendingLeavesCount} request{pendingLeavesCount === 1 ? '' : 's'} pending HR review
@@ -154,50 +177,55 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* Onboarding & Document Verification */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-purple-200 transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-500">Document Verification</span>
-            <div className="p-2 rounded-xl bg-purple-50 border border-purple-100 text-purple-600">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Verification</span>
+            <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-100 text-purple-600">
               <FileCheck className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">
-            {employee.onboardingProgress || 0}%
-          </p>
-          <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2">
+          <div className="flex items-baseline justify-between mt-3">
+            <p className="text-3xl font-bold text-slate-900 tracking-tight">
+              {employee.onboardingProgress || 0}%
+            </p>
+            <span className="text-xs font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">
+              Statutory
+            </span>
+          </div>
+          <div className="w-full bg-slate-100 rounded-full h-2 mt-2.5 overflow-hidden">
             <div
-              className="bg-violet-600 h-1.5 rounded-full transition-all duration-300"
-              style={{ width: `${employee.onboardingProgress || 0}%` }}
+              className="bg-gradient-to-r from-violet-600 to-purple-600 h-2 rounded-full transition-all duration-500 shadow-xs"
+              style={{ width: `${Math.max(employee.onboardingProgress || 0, 5)}%` }}
             />
           </div>
         </div>
 
         {/* HR Support Tickets */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-indigo-200 transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-500">HR Support</span>
-            <div className="p-2 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">HR Support</span>
+            <div className="p-2.5 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600">
               <LifeBuoy className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">
-            {activeSupportCount} Active
+          <p className="text-3xl font-bold text-slate-900 mt-3 tracking-tight">
+            {activeSupportCount} <span className="text-sm font-normal text-slate-400">Active</span>
           </p>
           <span className="text-[11px] text-slate-500 mt-1 block">
-            {mySupportTickets.length} total ticket{mySupportTickets.length === 1 ? '' : 's'} submitted
+            {mySupportTickets.length} total ticket{mySupportTickets.length === 1 ? '' : 's'} on record
           </span>
         </div>
 
         {/* Upcoming Holidays */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:-translate-y-1 hover:shadow-md hover:border-emerald-200 transition-all duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-500">Upcoming Holidays</span>
-            <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Holidays</span>
+            <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600">
               <Calendar className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">
-            {holidays.length} Days
+          <p className="text-3xl font-bold text-slate-900 mt-3 tracking-tight">
+            {holidays.length} <span className="text-sm font-normal text-slate-400">Days</span>
           </p>
           <span className="text-[11px] text-slate-500 mt-1 block truncate">
             {upcomingHolidays[0] ? `Next: ${upcomingHolidays[0].name}` : 'No upcoming holidays'}
@@ -206,53 +234,77 @@ export default function EmployeeDashboard() {
       </div>
 
       {/* 3. Quick Action Shortcuts */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <button
           type="button"
-          onClick={() => navigate('/employee/apply-leave')}
-          className="p-4 bg-white hover:bg-violet-50/50 rounded-2xl border border-slate-200/80 hover:border-violet-200 transition-all text-left shadow-2xs cursor-pointer group"
+          onClick={() => navigate('/employee/attendance')}
+          className="p-3.5 bg-white hover:bg-emerald-50/50 rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:-translate-y-1 hover:shadow-md transition-all duration-200 active:scale-95 text-left shadow-2xs cursor-pointer group"
         >
-          <div className="p-2 rounded-xl bg-violet-50 text-violet-700 w-fit mb-2 group-hover:scale-105 transition-transform">
-            <CalendarDays className="h-5 w-5" />
+          <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 w-fit mb-2 group-hover:scale-110 transition-transform">
+            <Clock className="h-4 w-4" />
           </div>
-          <p className="font-bold text-slate-900 text-xs sm:text-sm">Apply for Leave</p>
-          <p className="text-[11px] text-slate-500 mt-0.5">Casual, sick & earned time-off</p>
+          <p className="font-bold text-slate-900 text-xs sm:text-sm">Web Clock-In</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">Timesheet & hours</p>
         </button>
 
         <button
           type="button"
-          onClick={() => navigate('/employee/upload-document')}
-          className="p-4 bg-white hover:bg-violet-50/50 rounded-2xl border border-slate-200/80 hover:border-violet-200 transition-all text-left shadow-2xs cursor-pointer group"
+          onClick={() => navigate('/employee/payslips')}
+          className="p-3.5 bg-white hover:bg-violet-50/50 rounded-2xl border border-slate-200/80 hover:border-violet-300 hover:-translate-y-1 hover:shadow-md transition-all duration-200 active:scale-95 text-left shadow-2xs cursor-pointer group"
         >
-          <div className="p-2 rounded-xl bg-purple-50 text-purple-700 w-fit mb-2 group-hover:scale-105 transition-transform">
-            <UploadCloud className="h-5 w-5" />
+          <div className="p-2 rounded-xl bg-violet-50 text-violet-700 w-fit mb-2 group-hover:scale-110 transition-transform">
+            <DollarSign className="h-4 w-4" />
           </div>
-          <p className="font-bold text-slate-900 text-xs sm:text-sm">Upload Document</p>
-          <p className="text-[11px] text-slate-500 mt-0.5">Aadhaar, PAN, degree & letters</p>
+          <p className="font-bold text-slate-900 text-xs sm:text-sm">Payslips & Tax</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">Salary stubs & W-2</p>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate('/employee/apply-leave')}
+          className="p-3.5 bg-white hover:bg-purple-50/50 rounded-2xl border border-slate-200/80 hover:border-purple-300 hover:-translate-y-1 hover:shadow-md transition-all duration-200 active:scale-95 text-left shadow-2xs cursor-pointer group"
+        >
+          <div className="p-2 rounded-xl bg-purple-50 text-purple-700 w-fit mb-2 group-hover:scale-110 transition-transform">
+            <CalendarDays className="h-4 w-4" />
+          </div>
+          <p className="font-bold text-slate-900 text-xs sm:text-sm">Apply Leave</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">Time-off requests</p>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate('/employee/directory')}
+          className="p-3.5 bg-white hover:bg-blue-50/50 rounded-2xl border border-slate-200/80 hover:border-blue-300 hover:-translate-y-1 hover:shadow-md transition-all duration-200 active:scale-95 text-left shadow-2xs cursor-pointer group"
+        >
+          <div className="p-2 rounded-xl bg-blue-50 text-blue-700 w-fit mb-2 group-hover:scale-110 transition-transform">
+            <Users className="h-4 w-4" />
+          </div>
+          <p className="font-bold text-slate-900 text-xs sm:text-sm">Colleagues</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">Team & who's out</p>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate('/employee/id-card')}
+          className="p-3.5 bg-white hover:bg-indigo-50/50 rounded-2xl border border-slate-200/80 hover:border-indigo-300 hover:-translate-y-1 hover:shadow-md transition-all duration-200 active:scale-95 text-left shadow-2xs cursor-pointer group"
+        >
+          <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700 w-fit mb-2 group-hover:scale-110 transition-transform">
+            <CreditCard className="h-4 w-4" />
+          </div>
+          <p className="font-bold text-slate-900 text-xs sm:text-sm">Digital ID Pass</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">Badge & IT assets</p>
         </button>
 
         <button
           type="button"
           onClick={() => navigate('/employee/support')}
-          className="p-4 bg-white hover:bg-violet-50/50 rounded-2xl border border-slate-200/80 hover:border-violet-200 transition-all text-left shadow-2xs cursor-pointer group"
+          className="p-3.5 bg-white hover:bg-rose-50/50 rounded-2xl border border-slate-200/80 hover:border-rose-300 hover:-translate-y-1 hover:shadow-md transition-all duration-200 active:scale-95 text-left shadow-2xs cursor-pointer group"
         >
-          <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700 w-fit mb-2 group-hover:scale-105 transition-transform">
-            <LifeBuoy className="h-5 w-5" />
+          <div className="p-2 rounded-xl bg-rose-50 text-rose-700 w-fit mb-2 group-hover:scale-110 transition-transform">
+            <LifeBuoy className="h-4 w-4" />
           </div>
-          <p className="font-bold text-slate-900 text-xs sm:text-sm">HR Support Ticket</p>
-          <p className="text-[11px] text-slate-500 mt-0.5">Salary, leave & technical query</p>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigate('/employee/profile')}
-          className="p-4 bg-white hover:bg-violet-50/50 rounded-2xl border border-slate-200/80 hover:border-violet-200 transition-all text-left shadow-2xs cursor-pointer group"
-        >
-          <div className="p-2 rounded-xl bg-slate-100 text-slate-700 w-fit mb-2 group-hover:scale-105 transition-transform">
-            <User className="h-5 w-5" />
-          </div>
-          <p className="font-bold text-slate-900 text-xs sm:text-sm">My Profile</p>
-          <p className="text-[11px] text-slate-500 mt-0.5">Personal details & name request</p>
+          <p className="font-bold text-slate-900 text-xs sm:text-sm">HR Support</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">Helpdesk & tickets</p>
         </button>
       </div>
 
@@ -580,7 +632,10 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      {/* 6. Workplace Announcements & Notifications Preview */}
+      {/* 6. Workplace Kudos & Wall of Fame */}
+      <KudosFeedWidget />
+
+      {/* 7. Workplace Announcements & Notifications Preview */}
       <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
           <div>

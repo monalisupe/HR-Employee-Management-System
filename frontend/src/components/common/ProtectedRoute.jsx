@@ -12,8 +12,8 @@ export default function ProtectedRoute({ allowedRole, children }) {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    // Preserve requested location for post-login redirect
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // Redirect unauthenticated access to the clean root localhost URL
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   // Role-based boundary: if this route requires a specific role and current role does not match
